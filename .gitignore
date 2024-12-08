@@ -49,3 +49,4 @@ package-lock.json
 /sonar-project.properties
 /.scannerwork
 .scannerworks
+.gitlab-ci.yml
