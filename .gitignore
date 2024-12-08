@@ -37,8 +37,7 @@ lerna-debug.log*
 src/core/database/database.config.ts
 .env
 
-package.json
-package-lock.json
+
 
 
 .dockerignore
