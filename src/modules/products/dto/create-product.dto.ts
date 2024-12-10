@@ -1,15 +1,32 @@
-export class CreateProductDto {}
-
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsNotEmpty, IsOptional, IsDate, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateStoreProductDto {
+export class CreateProductDto {
+  @ApiProperty({ example: 'Surprise Bag - Bakery' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty({ example: 'https://i.pcmag.com/imagery/articles/03xdeDG4m4n0gJG3CbFNIgm-17..v1661444591.png' })
+  @IsString()
+  @IsNotEmpty()
+  product_image: string;
+
+  @ApiProperty({ example: 'A surprise bag of fresh bakery items including bread, pastries, and more.' })
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty({ example: 'Bakery' })
+  @IsString()
+  @IsNotEmpty()
+  category: string;
+
   @ApiProperty({ example: 1 })
   @IsNumber()
   @IsPositive()
-  store_id: number;
+  store: number;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
@@ -45,4 +62,5 @@ export class CreateStoreProductDto {
   @IsDate()
   @Type(() => Date)
   pickup_end_time: Date;
+  
 }

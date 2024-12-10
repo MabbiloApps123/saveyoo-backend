@@ -14,11 +14,11 @@ export class ProductsService extends BaseService<Product> {
     this.repository = productRepository;
   }
   async create(createProductDto: CreateProductDto) {
-    return await this.create(createProductDto);
+    return await super.create(createProductDto);
   }
 
   async findAll() {
-    return await super.findAll();
+    return await super.findAll({relations:['store']});
   }
 
   async findOne(id: number) {

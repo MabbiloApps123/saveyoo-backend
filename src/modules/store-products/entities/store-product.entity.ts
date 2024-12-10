@@ -6,12 +6,6 @@ import { Store } from 'src/modules/store/entities/store.entity';
 @Entity({ name: 'store_product' })
 export class StoreProduct extends BaseModel {
 
-  @ManyToOne(() => Store, store => store.storeProducts)
-  store: Store;
-
-  @ManyToOne(() => Product, product => product.store_products)
-  product: Product;
-
   @Column('decimal', { precision: 10, scale: 2 })
   original_price: number;
 
@@ -29,4 +23,10 @@ export class StoreProduct extends BaseModel {
 
   @Column('timestamp')
   pickup_end_time: Date;
+
+  // @ManyToOne(() => Store, store => store.storeProducts)
+  // store: Store;
+
+  // @ManyToOne(() => Product, product => product.store_products)
+  // product: Product;
 }

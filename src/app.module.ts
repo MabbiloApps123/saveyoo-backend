@@ -9,10 +9,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './core/database/database.config';
 import { StoreModule } from './modules/store/store.module';
+import { ProductsModule } from './modules/products/products.module';
+import { StoreProductsModule } from './modules/store-products/store-products.module';
 
 const env = process.env.NODE_ENV || 'development';
 const config = databaseConfig[env];
-console.log(config);
 @Module({
   imports: [
     // DatabaseModule,
@@ -38,6 +39,8 @@ console.log(config);
     AuthModule,
     UsersModule,
     StoreModule,
+    ProductsModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],
