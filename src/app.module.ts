@@ -24,7 +24,7 @@ console.log(config);
       password: config.password,
       database: config.database,
       entities: [`${__dirname}../../**/**.entity{.ts,.js}`],
-      ssl: true,
+      ssl: false,
       synchronize: true, // Consider using migrations instead
       extra: {
         connectionTimeoutMillis: 2000, // Timeout for connection
