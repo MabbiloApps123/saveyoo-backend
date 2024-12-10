@@ -9,7 +9,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreModule } from './modules/store/store.module';
 import { ProductsModule } from './modules/products/products.module';
-import { DBconfig } from './core/database/database.config';
+import { DBconfig } from './config';
 
 
 @Module({
