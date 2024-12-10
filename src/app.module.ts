@@ -23,7 +23,7 @@ import { DBconfig } from './config';
       password: DBconfig.password,
       database: DBconfig.database,
       entities: [`${__dirname}../../**/**.entity{.ts,.js}`],
-      ssl: process.env.NODE_ENV != 'local',
+      ssl: true,
       synchronize: true,
       extra: {
         connectionTimeoutMillis: 2000, // Timeout for connection
