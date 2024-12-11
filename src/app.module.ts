@@ -7,25 +7,24 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from 'nestjs-schedule';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { databaseConfig } from './core/database/database.config';
 import { StoreModule } from './modules/store/store.module';
+import { ProductsModule } from './modules/products/products.module';
+import { DBconfig } from './config';
 
-const env = process.env.NODE_ENV || 'development';
-const config = databaseConfig[env];
-console.log(config);
+
 @Module({
   imports: [
     // DatabaseModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: config.host,
-      port: config.port,
-      username: config.username,
-      password: config.password,
-      database: config.database,
+      host: DBconfig.host,
+      port: DBconfig.port,
+      username: DBconfig.username,
+      password: DBconfig.password,
+      database: DBconfig.database,
       entities: [`${__dirname}../../**/**.entity{.ts,.js}`],
       ssl: true,
-      synchronize: true, // Consider using migrations instead
+      synchronize: true,
       extra: {
         connectionTimeoutMillis: 2000, // Timeout for connection
       },
@@ -38,6 +37,7 @@ console.log(config);
     AuthModule,
     UsersModule,
     StoreModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

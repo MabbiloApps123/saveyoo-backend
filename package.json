@@ -9,7 +9,6 @@
     "sonar-scanner": "sonar-scanner",
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "build:deploy": "nest build && scp -r D:/Anand/Node/slaylewks_api/dist root@74.50.86.238:/home/slaylewks_node/live_source",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

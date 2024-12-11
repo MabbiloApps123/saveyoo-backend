@@ -26,9 +26,31 @@ export class CreateStoreDto {
   @ApiProperty({ description: 'Store name' })
   name: string;
 
-  @ApiProperty({ description: 'Store address' })
-  address: AddressDto;
+  @ApiProperty({ example: '9876543210' })
+  @IsNotEmpty()
+  phone: string;
 
-  @ApiProperty({ description: 'Store contact' })
-  contact: ContactDto;
+  @ApiProperty({ example: 'sample@gmail.com' })
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ example: 'mount road' })
+  @IsNotEmpty()
+  street: string;
+
+  @ApiProperty({ example: 'chennai' })
+  @IsNotEmpty()
+  city: string;
+  
+  @ApiProperty({ example: 'tamil nadu' })
+  @IsNotEmpty()
+  state: string;
+  
+  @ApiProperty({ example: '600050' })
+  @IsNotEmpty()
+  postal_code: string;
+  
+  @ApiProperty({ example: 'india' })
+  @IsNotEmpty()
+  country: string;
 }

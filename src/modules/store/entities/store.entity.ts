@@ -1,23 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { Address } from './address.entity';
-import { Contact } from './contact.entity';
+import { BaseModel } from 'src/core/database/BaseModel';
+import { Product } from 'src/modules/products/entities/product.entity';
+import { StoreProduct } from 'src/modules/store-products/entities/store-product.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 
-@Entity({ name: 'store' })
-export class Store {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Entity({ name: 'stores' })
+export class Store extends BaseModel {
   @Column({ unique: true })
   name: string;
 
   @Column({ unique: false, nullable: true })
   image_url: string;
 
-  @OneToOne(() => Address, (address) => address.store)
-  @JoinColumn()
-  address: Address;
+  @Column()
+  phone: string;
 
-  @OneToOne(() => Contact, (contact) => contact.store)
-  @JoinColumn()
-  contact: Contact;
+  @Column()
+  email: string;
+
+  @Column()
+  street: string;
+
+  @Column()
+  city: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  postal_code: string;
+
+  @Column()
+  country: string;
+
+  @OneToMany(() => Product, (product) => product.store) 
+  products: Product[];
 }
