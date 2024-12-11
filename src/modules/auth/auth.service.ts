@@ -15,6 +15,7 @@ import { Op } from 'sequelize';
 import Otp from 'src/modules/users/entities/otp.entity';
 import EmailTemService from 'src/core/utils/emailTemplate';
 import { MailUtils } from 'src/core/utils/mailUtils';
+import { UpdateUserDto } from '../users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,17 +34,22 @@ export class AuthService {
         return { code: EC410, msg: 'Otp Expired' };
       } else {
         body.email_verified = true;
-        let user: any = await this.userService.findOneByEmail(otpData.user);
+        let user: User = await this.userService.findOneByEmail(otpData.user);
         let token = null;
         // console.log(user);
         if (user) {
           token = await this.generateToken({ user_id: user.id });
         }
         body.user_id = user.id;
-        await this.userService.deleteOtp(request.email);
-        user = await this.userService.updateProfile(body);
+        await this.userService.deleteOtp(request.email_id);
+
+        user = await this.userService.updateProfile({
+          id: user.id,
+          email_id: user.email_id,
+          email_verified: true,
+        } as UpdateUserDto);
         logger.info(`Verify_OTP_Login_Successfully: ` + JSON.stringify(user));
-        return { code: EC200, msg: EM103, data: user };
+        return { code: EC200, msg: EM103, data: { ...user, access_token: token } };
       }
     } else {
       logger.info(`Verify_OTP_Invalid_Credentials: ` + JSON.stringify(body));
@@ -55,32 +61,51 @@ export class AuthService {
   public async login(userData: LoginDto): Promise<any> {
     const user: User = await this.userService.findOneByEmail(userData.email_id);
     if (!user) throw new NotFoundException(Errors.USER_NOT_EXISTS);
-    if (!user.password) throw new UnauthorizedException(Errors.INCORRECT_USER_PASSWORD);
-    if (!user.email_verified) throw new UnauthorizedException(EM150);
-    if (!Encryption.comparePassword(userData.password, user.password))
-      throw new UnauthorizedException(Errors.INVALID_USER_DETAILS);
+    // if (!user.password) throw new UnauthorizedException(Errors.INCORRECT_USER_PASSWORD);
+    // if (!user.email_verified) throw new UnauthorizedException(EM150);
+    // if (!Encryption.comparePassword(userData.password, user.password))
+    // throw new UnauthorizedException(Errors.INVALID_USER_DETAILS);
     const token = await this.generateToken(user);
     // const updatedUser = await this.userService.update(user.id, { device_token: userData?.device_token });
     return { ...user, access_token: token };
   }
 
   async signup({ email, password }: { email: string; password: string }) {
-    if (await this.userService.findOneByEmail(email)) {
+    let user: User = await this.userService.findOneByEmail(email);
+    if (user) {
       throw new Error('Email is already registered.');
+    } else {
+      user = await this.userService.create({
+        email_id: email,
+        password: password,
+        email_verified: false,
+      } as any);
     }
-
-    let user: User = await this.userService.create({
-      email_id: email,
-      password: password,
-      email_verified: false,
-    } as any);
-
-    const otp = this.generateOtp();
-    this.userService.createOtp(user.email_id, otp);
-    MailUtils.sendOtpEmail(email, otp);
+    this.sendOtpToMail(user, email);
 
     delete user.password;
     return user;
+  }
+
+  async loginWithEmail({ email_id }: LoginDto) {
+    let user: User = await this.userService.findOneByEmail(email_id);
+    if (!user) {
+      user = await this.userService.create({
+        email_id: email_id,
+        password: null,
+        email_verified: false,
+      } as any);
+    }
+    this.sendOtpToMail(user, email_id);
+
+    delete user.password;
+    return 'Otp sent successfully.Please check the email address';
+  }
+
+  private sendOtpToMail(user: User, email: string) {
+    const otp = this.generateOtp();
+    this.userService.createOtp(user.email_id, otp);
+    MailUtils.sendOtpEmail(email, otp);
   }
 
   async resendOtp({ email }: ResendEmailDto) {

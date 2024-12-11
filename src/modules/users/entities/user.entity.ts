@@ -69,18 +69,12 @@
 
 // }
 
-import {
-  Entity,
-  Column, BeforeInsert,
-  PrimaryGeneratedColumn
-} from 'typeorm';
+import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn } from 'typeorm';
 import Encryption from 'src/core/utils/encryption'; // Replace with your actual encryption utility.
 import { BaseModel } from 'src/core/database/BaseModel';
 
 @Entity({ name: 'users' })
 export default class User extends BaseModel {
-
-
   @Column({ type: 'varchar', nullable: true })
   user_name: string;
 
@@ -90,7 +84,7 @@ export default class User extends BaseModel {
   @Column({ type: 'varchar', nullable: true, unique: true })
   email_id: string;
 
-  @Column({ type: 'varchar', select: false }) // Prevent password from being returned in queries.
+  @Column({ type: 'varchar', select: false, nullable: true }) // Prevent password from being returned in queries.
   password: string;
 
   @BeforeInsert()

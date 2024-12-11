@@ -4,10 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsNumberString, IsOptional, IsUUID, Length } from 'class-validator';
 
 export class VerifyOtpDto extends PartialType(SendOtpDto) {
-    @ApiProperty({ example: "ff41c19f-df22-4052-8800-25dc4418099d" })
+    @ApiProperty({ example: "sample@gmail.com" })
     @IsNotEmpty()
     // @IsUUID()
-    email: string;
+    email_id: string;
 
     @ApiProperty({ example: 1234 })
     @IsNotEmpty()

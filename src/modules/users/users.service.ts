@@ -153,7 +153,7 @@ export class UsersService extends BaseService<User> {
       }
     }
 
-    await this.repository.update(userId, body);
+    await super.update(userId, body);
 
     const updatedUser = await this.findOneById(userId);
     logger.info(`User_UpdateProfile_Exit: ${JSON.stringify(updatedUser)}`);
@@ -186,7 +186,7 @@ export class UsersService extends BaseService<User> {
    */
   async findOtpById(request: VerifyOtpDto): Promise<Otp | null> {
     return await this.otpRepository.findOne({
-      where: { user: request.email, otp: request.otp },
+      where: { user: request.email_id, otp: request.otp },
     });
   }
 }

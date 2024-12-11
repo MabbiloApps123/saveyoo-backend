@@ -12,10 +12,19 @@ import { ms } from 'date-fns/locale';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // @Post('login')
+  // async login(@Body() req: LoginDto) {
+  //   try {
+  //     let data = await this.authService.login(req);
+  //     return HandleResponse.buildSuccessObj(EC200, EM106, data);
+  //   } catch (error) {
+  //     return HandleResponse.buildErrObj(error.status, EM100, error);
+  //   }
+  // }
   @Post('login')
   async login(@Body() req: LoginDto) {
     try {
-      let data = await this.authService.login(req);
+      let data = await this.authService.loginWithEmail(req);
       return HandleResponse.buildSuccessObj(EC200, EM106, data);
     } catch (error) {
       return HandleResponse.buildErrObj(error.status, EM100, error);
