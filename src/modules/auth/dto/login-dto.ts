@@ -4,6 +4,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'cla
 export class LoginDto {
   @ApiProperty({ example: 'sample@gmail.com' })
   @IsNotEmpty()
+  @IsEmail()
   email_id: string;
 
   @ApiProperty()

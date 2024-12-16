@@ -103,6 +103,9 @@ export default class User extends BaseModel {
   @Column({ type: 'varchar', length: 15, nullable: true })
   gender: string;
 
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  user_type: string;
+
   @Column({ type: 'date', nullable: true })
   dob: Date;
 
@@ -112,6 +115,6 @@ export default class User extends BaseModel {
   @Column({ type: 'text', nullable: true })
   device_token: string;
 
-  @Column({ type: 'boolean', default: false })
-  is_blocked: boolean;
+  @Column({ type: 'boolean', default: false }) 
+  is_blocked: boolean;  
 }

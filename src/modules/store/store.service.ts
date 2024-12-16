@@ -1,4 +1,4 @@
-import {  Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { BaseService } from 'src/base.service';
@@ -21,15 +21,27 @@ export class StoreService extends BaseService<Store> {
   }
 
   async findOne(id: number) {
-    
     return await super.findOne(id);
   }
 
   async update(id: number, updateStoreDto: UpdateStoreDto) {
-    return await super.update(id,updateStoreDto);
+    return await super.update(id, updateStoreDto);
   }
 
   async remove(id: number) {
     return await super.remove(id);
+  }
+
+  async findStoresWithinRadius(latitude: number, longitude: number, radius: number): Promise<Store[]> {
+    const radiusInKm = radius / 1000;
+    return this.repository.createQueryBuilder('store')
+      .select()
+      .addSelect(
+        `( 6371 * acos( cos( radians(:latitude) ) * cos( radians( store.latitude ) ) * cos( radians( store.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( store.latitude ) ) ) )`,
+        'distance',
+      )
+      .having('distance < :radiusInKm', { radiusInKm })
+      .setParameters({ latitude, longitude })
+      .getMany();
   }
 }

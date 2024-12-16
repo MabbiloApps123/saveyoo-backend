@@ -91,7 +91,6 @@
 //   }
 // }
 
-
 import { Injectable, Inject, ConflictException } from '@nestjs/common';
 import { Not, Repository } from 'typeorm';
 import { BaseService } from 'src/base.service';
@@ -99,10 +98,13 @@ import { VerifyOtpDto } from '../auth/dto/verify-otp.dto';
 import { UpdateUserDto } from './dto/user.dto';
 import { Errors } from 'src/core/constants/error_enums';
 import { logger } from 'src/core/utils/logger';
-import  Otp  from 'src/modules/users/entities/otp.entity';
-import  User  from 'src/modules/users/entities/user.entity';
+import Otp from 'src/modules/users/entities/otp.entity';
+import User from 'src/modules/users/entities/user.entity';
 import moment from 'moment';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Store } from '../store/entities/store.entity';
+import { StoreService } from '../store/store.service';
+import { StoreRepository } from '../store/store.repository';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -110,6 +112,7 @@ export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Otp) private readonly otpRepository: Repository<Otp>,
+    @InjectRepository(StoreRepository) private readonly storeRepository: StoreRepository,
   ) {
     super(userRepository.manager); // Pass EntityManager to BaseService
     this.repository = userRepository; // Set the repository for BaseService
@@ -188,5 +191,10 @@ export class UsersService extends BaseService<User> {
     return await this.otpRepository.findOne({
       where: { user: request.email_id, otp: request.otp },
     });
+  }
+
+  async home(latitude: number, longitude: number, radius: number) {
+    let stores = await this.storeRepository.findStoresWithinRadius(latitude, longitude, radius);
+    return stores 
   }
 }

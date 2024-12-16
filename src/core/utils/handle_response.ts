@@ -13,13 +13,7 @@ export default class HandleResponse {
     return this.res;
   }
 
-  static success(
-    res: any,
-    code: number,
-    status: boolean,
-    message: string,
-    data?: any,
-  ) {
+  static success(res: any, code: number, status: boolean, message: string, data?: any) {
     if (code === 500) {
       this.serverError(res, message, data);
       return;
@@ -45,13 +39,17 @@ export default class HandleResponse {
       statusCode: code,
       status: true,
       message: message,
-      data: data || null,
+      data: data || {},
     };
     return res;
   }
   static buildErrObj(code?: any, message?: any, error?: any) {
     console.error('error===>' + error);
-    logger.error(`Name:${error?.name} -> Message: ${error?.message} -> Json: ${JSON.stringify(error?.stack || error?.message || error)}`);
+    logger.error(
+      `Name:${error?.name} -> Message: ${error?.message} -> Json: ${JSON.stringify(
+        error?.stack || error?.message || error,
+      )}`,
+    );
     // console.trace()
     code = code ?? 500;
     if (
