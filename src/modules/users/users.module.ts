@@ -7,13 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import User from './entities/user.entity';
 import { DataSource } from 'typeorm';
 import Otp from './entities/otp.entity';
+import { StoreRepository } from '../store/store.repository';
+import { Store } from '../store/entities/store.entity';
 
 @Module({
   imports: [
     CacheModule.register(),
-    TypeOrmModule.forFeature([User,Otp]),
+    TypeOrmModule.forFeature([User,Otp,Store]),
   ],
-  providers: [UsersService],
+  providers: [UsersService,StoreRepository],
   exports: [UsersService],
   // controllers: [ UsersController],
 })

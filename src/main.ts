@@ -59,7 +59,6 @@ async function bootstrap() {
   expressApp.set('etag', 'strong');
   /*-------- security headers --------*/
   app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe());
   app.useStaticAssets(join(__dirname, '..', 'pdfs'));
 
   setupSwagger(app, 'user');

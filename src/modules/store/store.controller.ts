@@ -18,7 +18,7 @@ export class StoreController {
   @Get()
   async findAll() {
     const data = await this.storeService.findAll();
-    return HandleResponse.buildSuccessObj(201, 'Stores retrieved successfully!', data);
+    return HandleResponse.buildSuccessObj(201, 'Stores retrieved successfully!', data || []);
   }
 
   @Get(':id')

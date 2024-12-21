@@ -1,36 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsNumber, IsString } from 'class-validator';
 
-export class AddressDto {
-  @ApiProperty({ example: 'mount road' })
-  street: string;
-  @ApiProperty({ example: 'chennai' })
-  city: string;
-  @ApiProperty({ example: 'tamil nadu' })
-  state: string;
-  @ApiProperty({ example: '600050' })
-  postalCode: string;
-  @ApiProperty({ example: 'india' })
-  country: string;
-}
-
-export class ContactDto {
-  @ApiProperty({ example: '9876543210' })
-  phone: string;
-  @ApiProperty({ example: 'sample@gmail.com' })
-  email: string;
-}
 export class CreateStoreDto {
-  @IsString()
+  @ApiProperty({ example: 'My Store' })
   @IsNotEmpty()
-  @ApiProperty({ description: 'Store name' })
   name: string;
 
-  @ApiProperty({ example: '9876543210' })
-  @IsNotEmpty()
-  phone: string;
+  @ApiProperty({ example: 'http://example.com/image.jpg' })
+  @IsOptional()
+  image_url: string;
 
-  @ApiProperty({ example: 'sample@gmail.com' })
+  @ApiProperty({ example: '1234567890' })
+  @IsNotEmpty()
+  mobile_no: string;
+
+  @ApiProperty({ example: '1234567890' })
+  @IsOptional()
+  alternate_mobile_no: string;
+
+  @ApiProperty({ example: 'store@example.com' })
   @IsNotEmpty()
   email: string;
 
@@ -38,19 +26,42 @@ export class CreateStoreDto {
   @IsNotEmpty()
   street: string;
 
-  @ApiProperty({ example: 'chennai' })
+  @ApiProperty({ example: 'Chennai' })
   @IsNotEmpty()
   city: string;
-  
-  @ApiProperty({ example: 'tamil nadu' })
+
+  @ApiProperty({ example: 'Tamil Nadu' })
   @IsNotEmpty()
   state: string;
-  
-  @ApiProperty({ example: '600050' })
+
+  @ApiProperty({ example: '600001' })
   @IsNotEmpty()
   postal_code: string;
-  
-  @ApiProperty({ example: 'india' })
+
+  @ApiProperty({ example: 'India' })
   @IsNotEmpty()
   country: string;
+
+  @ApiProperty({ example: '09:00' })
+  @IsNotEmpty()
+  open_time: string;
+
+  @ApiProperty({ example: '21:00' })
+  @IsNotEmpty()
+  close_time: string;
+
+  @ApiProperty({ example: 1 })
+  @IsNotEmpty()
+  @IsNumber()
+  owner_id: number;
+
+  @ApiProperty({ example: 13.0827 })
+  @IsNotEmpty()
+  @IsNumber()
+  latitude: number;
+
+  @ApiProperty({ example: 80.2707 })
+  @IsNotEmpty()
+  @IsNumber()
+  longitude: number;
 }

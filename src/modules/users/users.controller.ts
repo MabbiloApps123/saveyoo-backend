@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -8,7 +8,7 @@ import { EC200, EM100, EM106, EM116 } from 'src/core/constants';
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
   @Get(':user_id')
   async profile(@Param('user_id') id: number) {
@@ -30,6 +30,12 @@ export class UsersController {
     }
   }
 
-
-
+  @Get('/user/home') async getStoresWithinRadius(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+  ) {
+    const stores = await this.userService.home(latitude, longitude, radius);
+    return HandleResponse.buildSuccessObj(200, 'Stores retrieved successfully!', stores);
+  }
 }
