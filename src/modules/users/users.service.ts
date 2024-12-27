@@ -105,6 +105,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Store } from '../store/entities/store.entity';
 import { StoreService } from '../store/store.service';
 import { StoreRepository } from '../store/store.repository';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -113,6 +114,7 @@ export class UsersService extends BaseService<User> {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Otp) private readonly otpRepository: Repository<Otp>,
     @InjectRepository(StoreRepository) private readonly storeRepository: StoreRepository,
+    @Inject(ProductsService) private readonly productsService: ProductsService,
   ) {
     super(userRepository.manager); // Pass EntityManager to BaseService
     this.repository = userRepository; // Set the repository for BaseService
@@ -195,6 +197,8 @@ export class UsersService extends BaseService<User> {
 
   async home(latitude: number, longitude: number, radius: number) {
     let stores = await this.storeRepository.findStoresWithinRadius(latitude, longitude, radius);
-    return stores 
+    let { data, total } = await this.productsService.findProductsWithPagination(latitude, longitude, radius);
+    let collectTomorrow = await this.productsService.collectToday(latitude, longitude, radius);
+    return { stores, collectToday: data, collectTomorrow: data };
   }
 }

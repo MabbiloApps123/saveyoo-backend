@@ -11,7 +11,7 @@ import { StoreModule } from './modules/store/store.module';
 import { ProductsModule } from './modules/products/products.module';
 import { DBconfig } from './config';
 
-
+console.log('env--->',DBconfig)
 @Module({
   imports: [
     // DatabaseModule,
@@ -22,9 +22,10 @@ import { DBconfig } from './config';
       username: DBconfig.username,
       password: DBconfig.password,
       database: DBconfig.database,
-      entities: [`${__dirname}../../**/**.entity{.ts,.js}`],
-      ssl: process.env.NODE_ENV=='development',
+      entities: [`${__dirname}../../**/**.entity{.ts,.js}`], 
+      ssl: false,
       synchronize: true,
+      logging:true,
       extra: {
         connectionTimeoutMillis: 2000, // Timeout for connection
       },

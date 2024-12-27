@@ -1,19 +1,14 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
-import { EC200, EC204, EC410, EM101, EM103, EM107, EM109, EM115, EM150 } from 'src/core/constants';
+import { EC200, EC204, EC410, EM103, EM107, EM109 } from 'src/core/constants';
 import moment from 'moment';
-import Helpers from 'src/core/utils/helpers';
 import User from 'src/modules/users/entities/user.entity';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { logger } from 'src/core/utils/logger';
 import { DeleteDto, LoginDto, ResendEmailDto, userlogoutDto } from './dto/login-dto';
 import { Errors } from 'src/core/constants/error_enums';
-import Encryption from 'src/core/utils/encryption';
-import { Op } from 'sequelize';
-import Otp from 'src/modules/users/entities/otp.entity';
-import EmailTemService from 'src/core/utils/emailTemplate';
 import { MailUtils } from 'src/core/utils/mailUtils';
 import { UpdateUserDto } from '../users/dto/user.dto';
 

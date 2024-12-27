@@ -1,21 +1,25 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Store } from './entities/store.entity';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class StoreRepository extends Repository<Store> {
-
+  constructor(dataSource: DataSource) {
+    super(Store, dataSource.createEntityManager());
+  }
   async findStoresWithinRadius(latitude: number, longitude: number, radius: number): Promise<Store[]> {
     const radiusInKm = radius / 1000;
 
     return this.createQueryBuilder('stores')
       .select()
       .addSelect(
-        `( 6371 * acos( cos( radians(:latitude) ) * cos( radians( store.latitude ) ) * cos( radians( store.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( store.latitude ) ) ) )`,
+        `( 6371 * acos( cos( radians(:latitude) ) * cos( radians( stores.latitude ) ) * cos( radians( stores.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( stores.latitude ) ) ) )`,
         'distance',
       )
-      .having('distance < :radiusInKm', { radiusInKm })
-      .setParameters({ latitude, longitude })
+      .where(
+        `( 6371 * acos( cos( radians(:latitude) ) * cos( radians( stores.latitude ) ) * cos( radians( stores.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( stores.latitude ) ) ) ) < :radiusInKm`,
+      )
+      .setParameters({ latitude, longitude, radiusInKm })
       .getMany();
   }
 }
