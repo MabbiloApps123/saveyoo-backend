@@ -40,10 +40,8 @@ src/core/database/database.config.ts
 
 
 
-.dockerignore
 .prettierrc
 /admin-swagger.json
-/user-swagger.json
 .sonar-project.properties
 /sonar-project.properties
 /.scannerwork

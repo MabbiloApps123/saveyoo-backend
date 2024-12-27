@@ -35,7 +35,7 @@ COPY --from=development /usr/src/app/node_modules ./node_modules
 
 # Copy the rest of the application code
 COPY . .
-COPY .env .env
+# COPY .env .env
 COPY user-swagger.json user-swagger.json
 # Run the build command which creates the production bundle
 RUN npm run build
