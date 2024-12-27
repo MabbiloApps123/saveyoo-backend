@@ -7,7 +7,7 @@ export class Store extends BaseModel {
   @Column({ unique: true })
   name: string;
 
-  @Column({ unique: false, nullable: true })
+  @Column({ unique: false, nullable: true }) 
   image_url: string;
 
   @Column()
@@ -33,6 +33,9 @@ export class Store extends BaseModel {
 
   @Column()
   country: string;
+
+  @Column({default:""})
+  category: string;
 
   @Column()
   open_time: string;  // time in HH:MM format

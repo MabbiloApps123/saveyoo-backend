@@ -12,6 +12,6 @@ export function setupSwagger(app: INestApplication, type: string) {
 
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('api-docs', app, document);
-    if (type == 'user') process.env.NODE_ENV != PRODUCTION && fs.writeFileSync('user-swagger.json', JSON.stringify(document, null, 2));
-    else process.env.NODE_ENV != PRODUCTION && fs.writeFileSync('admin-swagger.json', JSON.stringify(document, null, 2));
+    // if (type == 'user') process.env.NODE_ENV != PRODUCTION && fs.writeFileSync('user-swagger.json', JSON.stringify(document, null, 2));
+    // else process.env.NODE_ENV != PRODUCTION && fs.writeFileSync('admin-swagger.json', JSON.stringify(document, null, 2));
 }

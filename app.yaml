@@ -1,0 +1,14 @@
+runtime: nodejs18
+
+env_variables:
+  NODE_ENV: 'development'
+  USER_PORT: 4000
+  JWTKEY: 'asldjfldsjlfsf'
+  TOKEN_EXPIRATION: 'hour || minutes || 48h'
+  DB_HOST_DEV: /cloudsql/rapid-bricolage-444914-c5:asia-south1:saveyoo
+  DB_PORT_DEV: 5432
+  DB_USER_DEV: 'saveyoo'
+  DB_PASSWORD_DEV: 'Saveyoo@2025AppDev'
+  DB_NAME_DEV: 'saveyoo'
+  DB_DIALECT_DEV: 'postgres'
+  ASSETS_PATH_DEV: 'http://localhost:3000'

@@ -119,9 +119,17 @@
 //   }
 // }
 
-
 import { Injectable } from '@nestjs/common';
-import { Repository, FindManyOptions, FindOneOptions, UpdateResult, EntityManager, In, Like, DeepPartial } from 'typeorm';
+import {
+  Repository,
+  FindManyOptions,
+  FindOneOptions,
+  UpdateResult,
+  EntityManager,
+  In,
+  Like,
+  DeepPartial,
+} from 'typeorm';
 import { EntityTarget } from 'typeorm/common/EntityTarget';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
@@ -152,6 +160,14 @@ export abstract class BaseService<T> {
    */
   async findAll(options?: FindManyOptions<T>): Promise<T[]> {
     return this.repository.find(options);
+  }
+  async findAllWithPagination(
+    page: number,
+    limit: number,
+    options?: FindManyOptions<T>,
+  ): Promise<{ data: T[]; total: number }> {
+    let [data, total] = await this.repository.findAndCount({ ...options, skip: (page - 1) * limit, take: limit });
+    return { data, total };
   }
 
   /**
@@ -225,4 +241,3 @@ export abstract class BaseService<T> {
   //   return updatedRecords.length;
   // }
 }
-

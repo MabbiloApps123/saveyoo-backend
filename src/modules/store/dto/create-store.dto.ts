@@ -22,6 +22,10 @@ export class CreateStoreDto {
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ example: "supermarket" })
+  @IsNotEmpty()
+  category: string;
+
   @ApiProperty({ example: 'mount road' })
   @IsNotEmpty()
   street: string;
