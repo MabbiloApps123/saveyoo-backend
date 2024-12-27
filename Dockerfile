@@ -63,7 +63,7 @@ RUN mkdir -p /usr/src/app/logs && chmod -R 777 /usr/src/app/logs
 USER node
 
 # Expose application port
-EXPOSE 4000
+EXPOSE 8080
 
 # Start the server using the production build
 CMD ["node", "dist/src/main"]

@@ -67,7 +67,7 @@ async function bootstrap() {
   app.use(device.capture());
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ResponseLoggingInterceptor());
-  await app.listen(Number(process.env.USER_PORT||4000));
+  await app.listen(Number(process.env.USER_PORT||8080));
 
   process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error?.message);

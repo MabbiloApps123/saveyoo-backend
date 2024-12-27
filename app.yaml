@@ -2,7 +2,7 @@ runtime: nodejs18
 
 env_variables:
   NODE_ENV: 'development'
-  USER_PORT: 4000
+  USER_PORT: 8080
   JWTKEY: 'asldjfldsjlfsf'
   TOKEN_EXPIRATION: 'hour || minutes || 48h'
   DB_HOST_DEV: /cloudsql/rapid-bricolage-444914-c5:asia-south1:saveyoo
