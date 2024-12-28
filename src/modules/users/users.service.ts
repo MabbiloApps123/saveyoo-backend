@@ -195,10 +195,4 @@ export class UsersService extends BaseService<User> {
     });
   }
 
-  async home(latitude: number, longitude: number, radius: number) {
-    let stores = await this.storeRepository.findStoresWithinRadius(latitude, longitude, radius);
-    let { data, total } = await this.productsService.findProductsWithPagination(latitude, longitude, radius);
-    let collectTomorrow = await this.productsService.collectToday(latitude, longitude, radius);
-    return { stores, collectToday: data, collectTomorrow: data };
-  }
 }

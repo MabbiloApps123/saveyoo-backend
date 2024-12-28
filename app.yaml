@@ -12,3 +12,5 @@ env_variables:
   DB_NAME_DEV: 'saveyoo'
   DB_DIALECT_DEV: 'postgres'
   ASSETS_PATH_DEV: 'http://localhost:3000'
+manual_scaling: 
+  instances: 1

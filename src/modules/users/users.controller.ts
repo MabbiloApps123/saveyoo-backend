@@ -4,11 +4,12 @@ import { UpdateUserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import HandleResponse from 'src/core/utils/handle_response';
 import { EC200, EM100, EM106, EM116 } from 'src/core/constants';
+import { HomeService } from './home.service';
 
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService,private readonly homeService: HomeService) {}
 
   @Get(':user_id')
   async profile(@Param('user_id') id: number) {
@@ -35,7 +36,7 @@ export class UsersController {
     @Query('longitude') longitude: number,
     @Query('radius') radius: number,
   ) {
-    const stores = await this.userService.home(latitude, longitude, radius);
+    const stores = await this.homeService.getHomePageData(latitude, longitude, radius);
     return HandleResponse.buildSuccessObj(200, 'Stores retrieved successfully!', stores);
   }
 }

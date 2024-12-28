@@ -11,11 +11,13 @@ import { StoreRepository } from '../store/store.repository';
 import { Store } from '../store/entities/store.entity';
 import { ProductsService } from '../products/products.service';
 import { ProductRepository } from '../products/products.repository';
+import { HomeService } from './home.service';
+import { StoreProduct } from '../store-products/entities/store-product.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Otp, Store])],
-  providers: [UsersService, StoreRepository, ProductsService, ProductRepository],
-  exports: [UsersService],
+  imports: [TypeOrmModule.forFeature([User, Otp, Store,StoreProduct])],
+  providers: [UsersService,HomeService, StoreRepository, ProductsService, ProductRepository],
+  exports: [UsersService,HomeService],
   // controllers: [ UsersController ],
 })
 export class UsersModule {}

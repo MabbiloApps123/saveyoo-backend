@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { BaseModel } from 'src/core/database/BaseModel';
 import { Store } from 'src/modules/store/entities/store.entity';
@@ -15,6 +15,9 @@ export class StoreProduct extends BaseModel {
   @Column()
   currency: string;
 
+  @Column({default:"available_now"})
+  deal_type: string;
+
   @Column()
   quantity: number;
 
@@ -24,9 +27,12 @@ export class StoreProduct extends BaseModel {
   @Column('timestamp')
   pickup_end_time: Date;
 
-  // @ManyToOne(() => Store, store => store.storeProducts)
-  // store: Store;
+  @ManyToOne(() => Store, (store) => store.storeProducts, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'store_id' })
+  store: Store;
 
-  // @ManyToOne(() => Product, product => product.store_products)
-  // product: Product;
+  @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 }
+

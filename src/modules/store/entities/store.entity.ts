@@ -1,5 +1,6 @@
 import { BaseModel } from 'src/core/database/BaseModel';
 import { Product } from 'src/modules/products/entities/product.entity';
+import { StoreProduct } from 'src/modules/store-products/entities/store-product.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity("stores")
@@ -52,6 +53,6 @@ export class Store extends BaseModel {
   @Column({ type: 'decimal', precision: 10, scale: 6 })
   longitude: number;
 
-  @OneToMany(() => Product, (product) => product.store)  
-  products: Product[];
+  @OneToMany(() => StoreProduct, (storeProduct) => storeProduct.product)
+  storeProducts: StoreProduct[];
 }

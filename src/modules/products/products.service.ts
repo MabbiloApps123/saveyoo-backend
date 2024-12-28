@@ -23,7 +23,7 @@ export class ProductsService extends BaseService<Product> {
   }
 
   async findAll() {
-    return await super.findAll({ relations: ['store'] });
+    return await super.findAll();
   }
 
   async findProductsWithPagination(latitude: number, longitude: number, radius: number) {
@@ -32,7 +32,7 @@ export class ProductsService extends BaseService<Product> {
   }
 
   async findOne(id: number) {
-    return await super.findOne(id);
+    return await super.findOne(id); 
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

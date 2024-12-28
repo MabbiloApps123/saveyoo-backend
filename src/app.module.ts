@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreModule } from './modules/store/store.module';
 import { ProductsModule } from './modules/products/products.module';
 import { DBconfig } from './config';
+import { StoreProductsModule } from './modules/store-products/store-products.module';
 
 console.log('env--->',DBconfig)
 @Module({
@@ -39,6 +40,7 @@ console.log('env--->',DBconfig)
     UsersModule,
     StoreModule,
     ProductsModule,
+    StoreProductsModule
   ],
   controllers: [AppController],
   providers: [AppService],

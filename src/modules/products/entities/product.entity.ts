@@ -19,26 +19,11 @@ export class Product extends BaseModel {
   @Column()
   category: string;
 
-  // @Column('decimal', { precision: 10, scale: 2 })
-  // original_price: number;
-
-  // @Column('decimal', { precision: 10, scale: 2 })
-  // discounted_price: number;
-
   @Column()
   currency: string;
 
-  // @Column()
-  // quantity: number;
-
-  // @Column('timestamp')
-  // pickup_start_time: Date;
-
-  // @Column('timestamp')
-  // pickup_end_time: Date;
-
-  @ManyToOne(() => Store, store => store.products)
-  @JoinColumn()
-  store: Store;
+ 
+  @OneToMany(() => StoreProduct, (storeProduct) => storeProduct.store)
+  storeProducts: StoreProduct[];
 
 }
