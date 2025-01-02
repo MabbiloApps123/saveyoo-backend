@@ -49,6 +49,8 @@ export class HomeService {
       pickup_start_time: storeProduct.pickup_start_time,
       pickup_end_time: storeProduct.pickup_end_time,
       product: storeProduct.product.name,
+      product_image: storeProduct.product.product_image,
+      is_favourite: true,
       distance:4.00,
       ratings:4.5,
       store: {

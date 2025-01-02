@@ -26,6 +26,9 @@ export class StoreProduct extends BaseModel {
 
   @Column('timestamp')
   pickup_end_time: Date;
+  
+  @Column()
+  is_surprise: boolean;
 
   @ManyToOne(() => Store, (store) => store.storeProducts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'store_id' })

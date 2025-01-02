@@ -21,7 +21,6 @@ export class Product extends BaseModel {
 
   @Column()
   currency: string;
-
  
   @OneToMany(() => StoreProduct, (storeProduct) => storeProduct.store)
   storeProducts: StoreProduct[];

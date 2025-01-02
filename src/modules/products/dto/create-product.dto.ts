@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsNotEmpty, IsOptional, IsDate, IsPositive } from 'class-validator';
+import { IsNumber, IsString, IsNotEmpty, IsOptional, IsDate, IsPositive, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsPositive, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsDate, IsPositive, ValidateIf, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateStoreProductDto {
@@ -39,6 +39,10 @@ export class CreateStoreProductDto {
   @IsPositive()
   quantity: number;
 
+  @ApiProperty({ example: false })
+  @IsBoolean()
+  is_surprise: boolean;
+  
   @ApiProperty({ example: '2024-11-22T14:00:00', description: 'Pickup start time in ISO format' })
   @IsDate()
   @Type(() => Date)
