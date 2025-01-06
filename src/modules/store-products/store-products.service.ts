@@ -120,6 +120,7 @@ export class StoreProductService {
 
   private filterAndMap(storeProducts: StoreProduct[]) {
     return storeProducts.map((storeProduct) => ({
+      store_product_id: storeProduct.id,
       product_id: storeProduct.product.id,
       store_id: storeProduct.store.id,
       original_price: storeProduct.original_price,
