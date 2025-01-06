@@ -108,4 +108,39 @@ export class StoreProductService {
       return { ...storeProductData, ...product };
     });
   }
+
+  async getProductsByDeal(category: string): Promise<any[]> {
+    const storeProducts = await this.storeProductRepository.find({
+      where: { deal_type: category },
+      relations: ['product', 'store'],
+    });
+
+    return this.filterAndMap(storeProducts);
+  }
+
+  private filterAndMap(storeProducts: StoreProduct[]) {
+    return storeProducts.map((storeProduct) => ({
+      product_id: storeProduct.product.id,
+      store_id: storeProduct.store.id,
+      original_price: storeProduct.original_price,
+      discounted_price: storeProduct.discounted_price,
+      currency: storeProduct.currency,
+      quantity: storeProduct.quantity,
+      pickup_start_time: storeProduct.pickup_start_time,
+      pickup_end_time: storeProduct.pickup_end_time,
+      product: storeProduct.product.name,
+      product_image: storeProduct.product.product_image,
+      is_favourite: true,
+      distance: 4.0,
+      ratings: 4.5,
+      store: {
+        id: storeProduct.store.id,
+        name: storeProduct.store.name,
+        image_url: storeProduct.store.image_url,
+        category: storeProduct.store.category,
+        open_time: storeProduct.store.open_time,
+        close_time: storeProduct.store.close_time,
+      },
+    }));
+  }
 }

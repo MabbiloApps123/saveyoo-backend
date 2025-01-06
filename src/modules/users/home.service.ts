@@ -12,17 +12,12 @@ export class HomeService {
 
   async getHomePageData(latitude: number, longitude: number, radius: number): Promise<any> {
     // Fetch "just_for_you" data
-    const justForYou = await this.getProductsByCategory('just_for_you');
-
-    // Fetch "last_chance_deals" data
-    const lastChanceDeals = await this.getProductsByCategory('last_chance_deals');
-
-    // Fetch "available_now" data
-    const availableNow = await this.getProductsByCategory('available_now');
-
-    // Fetch "dinnertime_deals" data
-    const dinnertimeDeals = await this.getProductsByCategory('dinnertime_deals');
-
+    const [justForYou, lastChanceDeals, availableNow, dinnertimeDeals] = await Promise.all([
+      this.getProductsByDeal('just_for_you'),
+      this.getProductsByDeal('last_chance_deals'),
+      this.getProductsByDeal('available_now'),
+      this.getProductsByDeal('dinnertime_deals'),
+    ]);
     // Return structured response
     return {
       just_for_you: justForYou,
@@ -32,13 +27,16 @@ export class HomeService {
     };
   }
 
-  private async getProductsByCategory(category: string): Promise<any[]> {
+  async getProductsByDeal(category: string): Promise<any[]> {
     const storeProducts = await this.storeProductRepository.find({
       where: { deal_type: category },
       relations: ['product', 'store'],
     });
 
-    // Filter and map data based on the required structure
+    return this.filterAndMap(storeProducts);
+  }
+
+  private filterAndMap(storeProducts: StoreProduct[]) {
     return storeProducts.map((storeProduct) => ({
       product_id: storeProduct.product.id,
       store_id: storeProduct.store.id,
@@ -51,8 +49,8 @@ export class HomeService {
       product: storeProduct.product.name,
       product_image: storeProduct.product.product_image,
       is_favourite: true,
-      distance:4.00,
-      ratings:4.5,
+      distance: 4.0,
+      ratings: 4.5,
       store: {
         id: storeProduct.store.id,
         name: storeProduct.store.name,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -20,6 +20,15 @@ export class ProductsController {
   @Get(':id') async findOne(@Param('id') id: string) {
     const data = await this.productsService.findOne(+id);
     return HandleResponse.buildSuccessObj(200, 'Product retrieved successfully!', data);
+  }
+  @Get('/products/by-deal') async getProducstByDeal(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+    @Query('category') category: string,
+  ) {
+    const stores = await this.productsService.getProductsByDeal(category);
+    return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
   }
   @Patch(':id') async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     const data = await this.productsService.update(+id, updateProductDto);

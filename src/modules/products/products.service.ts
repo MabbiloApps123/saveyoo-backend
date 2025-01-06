@@ -9,6 +9,7 @@ import { ProductRepository } from './products.repository';
 
 @Injectable()
 export class ProductsService extends BaseService<Product> {
+
   protected repository: ProductRepository;
   columns: string[];
   constructor(@InjectRepository(ProductRepository) productRepository: ProductRepository) {
@@ -55,5 +56,9 @@ export class ProductsService extends BaseService<Product> {
     const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
     let data = await this.repository.findProductsWithinRadiusAndTimeRange(latitude, longitude, radius, now, todayEnd);
     return data;
+  }
+
+  getProductsByDeal(category: string) {
+    throw new Error('Method not implemented.');
   }
 }
