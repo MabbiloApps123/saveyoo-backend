@@ -11,6 +11,14 @@ import { HomeService } from './home.service';
 export class UsersController {
   constructor(private readonly userService: UsersService,private readonly homeService: HomeService) {}
 
+  @Get('/home') async getStoresWithinRadius(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+  ) {
+    const stores = await this.homeService.getHomePageData(latitude, longitude, radius);
+    return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
+  }
   @Get(':user_id')
   async profile(@Param('user_id') id: number) {
     try {
@@ -30,14 +38,4 @@ export class UsersController {
       return HandleResponse.buildErrObj(error?.status || null, error.message, error);
     }
   }
-
-  @Get('/user/home') async getStoresWithinRadius(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
-    @Query('radius') radius: number,
-  ) {
-    const stores = await this.homeService.getHomePageData(latitude, longitude, radius);
-    return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
-  }
-
 }
