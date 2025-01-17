@@ -1,9 +1,10 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, Query } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import HandleResponse from 'src/core/utils/handle_response';
 import { ApiTags } from '@nestjs/swagger';
+import { buildFilters } from 'src/core/utils/helpers';
 @ApiTags('store')
 @Controller('store')
 export class StoreController {
@@ -16,8 +17,9 @@ export class StoreController {
   }
 
   @Get()
-  async findAll() {
-    const data = await this.storeService.findAll();
+  async findAll(@Query() query: Record<string, any>) {
+    const filters = buildFilters(query);
+    const data = await this.storeService.findAll(filters);
     return HandleResponse.buildSuccessObj(201, 'Stores retrieved successfully!', data || []);
   }
 

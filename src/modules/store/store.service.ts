@@ -16,13 +16,16 @@ export class StoreService extends BaseService<Store> {
   async create(createStoreDto: CreateStoreDto) {
     return await super.create(createStoreDto);
   }
-  async findAll() {
-    return await super.findAll();
+  async findAll(filters:Record<string, any>) {
+    return await this.repository.findBy(filters);
   }
 
   async findOne(id: number) {
     return await super.findOne(id);
   }
+  // async findBy() {
+  //   return await this.repository.findBy({});
+  // }
 
   async update(id: number, updateStoreDto: UpdateStoreDto) {
     return await super.update(id, updateStoreDto);

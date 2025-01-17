@@ -44,16 +44,6 @@ export class UpdateUserDto {
   mobile_no: string;
 
   @ApiProperty()
-  @IsString()
-  @IsOptional()
-  invited_ref_code: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  referral_code: string;
-
-  @ApiProperty()
   @IsOptional()
   @IsBoolean()
   email_verified: boolean;

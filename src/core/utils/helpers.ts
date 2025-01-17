@@ -9,3 +9,14 @@ export function applyDynamicConditions(
   });
   return qb;
 }
+
+
+export function buildFilters(query: Record<string, any>) {
+  const filters: Record<string, any> = {};
+  for (const [key, value] of Object.entries(query)) {
+    if (value) {
+      filters[key] = value; // Add your filtering logic here if necessary
+    }
+  }
+  return filters;
+}

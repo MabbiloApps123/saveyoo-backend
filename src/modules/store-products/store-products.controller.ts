@@ -39,8 +39,8 @@ export class StoreProductsController {
     return this.storeProductsService.findOne(+id);
   }
   @Get('/store/:id')
-  findByStore(@Param('id') id: string) {
-    return this.storeProductsService.getProductsByStore(+id);
+  findByStore(@Param('id') id: string, @Query() filters: Record<string,any>) {
+    return this.storeProductsService.getProductsByStore(+id, filters);
   }
 
   @Patch(':id')
@@ -52,6 +52,4 @@ export class StoreProductsController {
   remove(@Param('id') id: string) {
     return this.storeProductsService.remove(+id);
   }
-
-
 }

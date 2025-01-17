@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Store } from '../store/entities/store.entity';
 import { StoreProduct } from './entities/store-product.entity';
+import { LessThanOrEqual, MoreThan } from 'typeorm';
 
 @Injectable()
 export class StoreProductService {
@@ -74,15 +75,21 @@ export class StoreProductService {
   }
 
   // Get all products for a specific store
-  async getProductsByStore(storeId: number): Promise<any[]> {
+  async getProductsByStore(storeId: number, filters?:Record<string,any>): Promise<any[]> {
     const store = await this.storeRepository.findOne({ where: { id: storeId } });
     if (!store) {
       throw new NotFoundException(`Store with ID ${storeId} not found`);
     }
+    const dateFilter = {};
+    if (filters?.startDate && filters?.endDate) {
+      dateFilter['created_at'] = Between(new Date(filters?.startDate), new Date(filters?.endDate));
+    } else if (filters?.startDate) {
+      dateFilter['created_at'] = Between(new Date(filters?.startDate), new Date());
+    }
 
     let storeProducts = await this.storeProductRepository.find({
-      where: { store },
-      relations: ['product','store'],
+      where: { store,...dateFilter },
+      relations: ['product', 'store'],
     });
 
     return storeProducts.map((storeProduct) => {
@@ -98,7 +105,7 @@ export class StoreProductService {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    let productStores= await this.storeProductRepository.find({
+    let productStores = await this.storeProductRepository.find({
       where: { product },
       relations: ['store'],
     });
@@ -144,4 +151,31 @@ export class StoreProductService {
       },
     }));
   }
+
+  // async getProductsByDeal(category: string, userLat: number, userLng: number): Promise<any[]> {
+  //     const currentTime = new Date();
+
+  //     // Query to get deals based on the given filters
+  //     const storeProducts = await this.storeProductRepository
+  //         .createQueryBuilder('storeProduct')
+  //         .innerJoinAndSelect('storeProduct.product', 'product')
+  //         .innerJoinAndSelect('storeProduct.store', 'store')
+  //         .where('storeProduct.deal_type = :category', { category })
+  //         .andWhere('storeProduct.pickup_end_time > :currentTime', { currentTime }) // Time-sensitive deals
+  //         .andWhere('storeProduct.quantity > 0') // Exclude sold-out deals
+  //         .orderBy('storeProduct.pickup_end_time', 'ASC') // Closest expiry first
+  //         .addOrderBy('storeProduct.quantity', 'ASC') // Low stock next
+  //         .addOrderBy(
+  //             `ST_Distance_Sphere(
+  //                 POINT(store.longitude, store.latitude),
+  //                 POINT(:userLng, :userLat)
+  //             )`,
+  //             'ASC'
+  //         ) // Closest stores
+  //         .setParameters({ userLat, userLng })
+  //         .getMany();
+
+  //     // Return the filtered and mapped results
+  //     return this.filterAndMap(storeProducts);
+  // }
 }
