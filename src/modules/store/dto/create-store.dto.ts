@@ -23,6 +23,14 @@ export class CreateStoreDto {
   @IsOptional()
   image_url: string;
 
+  @ApiProperty({ example: 'store details' })
+  @IsOptional()
+  about: string;
+
+  @ApiProperty({ example: 'http://example.com/image.jpg' })
+  @IsOptional()
+  web_url: string;
+
   @ApiProperty({ example: '1234567890' })
   @IsNotEmpty()
   mobile_no: string;
@@ -117,6 +125,11 @@ export class CreateStoreDto {
   @IsOptional()
   @IsString()
   bank_branch: string;
+
+  @ApiProperty({ example: 'KGKJ9768678KJHI', description: 'The VAT no of the business' })
+  @IsOptional()
+  @IsString()
+  VAT: string;
 }
 
 

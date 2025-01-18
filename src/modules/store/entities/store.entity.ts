@@ -8,6 +8,12 @@ export class Store extends BaseModel {
   @Column({ unique: true })
   name: string;
 
+  @Column({default:"lorem ipsum lorem ipsum" })
+  about: string;
+
+  @Column({default:"https://example.com" })
+  web_url: string;
+
   @Column({ unique: false, nullable: true })
   image_url: string;
 
@@ -48,9 +54,9 @@ export class Store extends BaseModel {
   owner_id: number;
 
   @Column({ default: null })
-  business_start_data: Date;
+  business_start_date: Date;
 
-  @Column({ default: null,select:false })
+  @Column({ default: null,select:true })
   gst_no: string;
 
   @Column({ default: null,select:false })
@@ -65,11 +71,14 @@ export class Store extends BaseModel {
   // @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
   // location: string; // Geospatial column for lat/lng
 
-  @Column({ type: 'decimal',default:0, precision: 10, scale: 6 })
+  @Column({ type: 'decimal',default:13.0843, precision: 10, scale: 6 })
   latitude: number;
 
-  @Column({ type: 'decimal',default:0, precision: 10, scale: 6 })
+  @Column({ type: 'decimal',default:80.2705, precision: 10, scale: 6 })
   longitude: number;
+
+  @Column({default:"452345ASDFA"})
+  VAT: string;
 
   @OneToMany(() => StoreProduct, (storeProduct) => storeProduct.product)
   storeProducts: StoreProduct[];
