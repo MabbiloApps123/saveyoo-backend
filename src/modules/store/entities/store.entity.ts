@@ -65,11 +65,11 @@ export class Store extends BaseModel {
   // @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
   // location: string; // Geospatial column for lat/lng
 
-  // @Column({ type: 'decimal', precision: 10, scale: 6 })
-  // latitude: number;
+  @Column({ type: 'decimal',default:0, precision: 10, scale: 6 })
+  latitude: number;
 
-  // @Column({ type: 'decimal', precision: 10, scale: 6 })
-  // longitude: number;
+  @Column({ type: 'decimal',default:0, precision: 10, scale: 6 })
+  longitude: number;
 
   @OneToMany(() => StoreProduct, (storeProduct) => storeProduct.product)
   storeProducts: StoreProduct[];
