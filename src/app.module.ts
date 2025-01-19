@@ -11,6 +11,7 @@ import { StoreModule } from './modules/store/store.module';
 import { ProductsModule } from './modules/products/products.module';
 import { DBconfig } from './config';
 import { StoreProductsModule } from './modules/store-products/store-products.module';
+import { FavouriteModule } from './modules/favourite/favourite.module';
 
 console.log('env--->',DBconfig)
 @Module({
@@ -40,7 +41,8 @@ console.log('env--->',DBconfig)
     UsersModule,
     StoreModule,
     ProductsModule,
-    StoreProductsModule
+    StoreProductsModule,
+    FavouriteModule
   ],
   controllers: [AppController],
   providers: [AppService],
