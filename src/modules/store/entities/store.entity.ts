@@ -14,6 +14,9 @@ export class Store extends BaseModel {
   @Column({default:"https://example.com" })
   web_url: string;
 
+  @Column({default:"https://example.com" })
+  icon_url: string;
+
   @Column({ unique: false, nullable: true })
   image_url: string;
 
@@ -68,8 +71,8 @@ export class Store extends BaseModel {
   @Column({ default: null,select:false })
   bank_branch: string;
 
-  // @Column('geometry', { spatialFeatureType: 'Point', srid: 4326 })
-  // location: string; // Geospatial column for lat/lng
+  @Column('geometry', { nullable:true,spatialFeatureType: 'Point', srid: 4326 })
+  location: string;
 
   @Column({ type: 'decimal',default:13.0843, precision: 10, scale: 6 })
   latitude: number;

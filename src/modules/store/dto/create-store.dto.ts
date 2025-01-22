@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsNumber, IsString, IsDate, ValidateNested, IsObject } from 'class-validator';
 
-
 class LocationDto {
   @ApiProperty({ example: 12.971598, description: 'Latitude of the location' })
   @IsNotEmpty()
@@ -22,6 +21,10 @@ export class CreateStoreDto {
   @ApiProperty({ example: 'http://example.com/image.jpg' })
   @IsOptional()
   image_url: string;
+
+  @ApiProperty({ example: 'http://example.com/image.jpg' })
+  @IsOptional()
+  icon_url: string;
 
   @ApiProperty({ example: 'store details' })
   @IsOptional()
@@ -43,7 +46,7 @@ export class CreateStoreDto {
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: "supermarket" })
+  @ApiProperty({ example: 'supermarket' })
   @IsNotEmpty()
   category: string;
 
@@ -80,16 +83,15 @@ export class CreateStoreDto {
   @IsNumber()
   owner_id: number;
 
-  // @ApiProperty({
-  //   description: 'Geospatial location of the store (latitude and longitude)',
-  //   type: LocationDto,
-  // })
-  // @IsNotEmpty()
-  // @IsObject()
-  // @ValidateNested()
-  // @Type(() => LocationDto)
-  // location: LocationDto;
-  
+  @IsNotEmpty()
+  @ApiProperty({
+    example: {
+      type: 'Point',
+      coordinates: [-74.006, 40.7128], // Replace with actual data
+    },
+  })
+  location: string;
+
   // @ApiProperty({ example: 13.0827 })
   // @IsNotEmpty()
   // @IsNumber()
@@ -131,5 +133,3 @@ export class CreateStoreDto {
   @IsString()
   VAT: string;
 }
-
-
