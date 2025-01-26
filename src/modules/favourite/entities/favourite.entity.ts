@@ -9,7 +9,7 @@ export class Favourite extends BaseModel {
   id: number;
 
   @ManyToOne(() => StoreProduct, { nullable: false, eager: false})
-  product: StoreProduct;
+  store_product: StoreProduct;
 
   @Column()
   user_id: number;

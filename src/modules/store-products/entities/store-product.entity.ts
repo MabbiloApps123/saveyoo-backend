@@ -34,7 +34,7 @@ export class StoreProduct extends BaseModel {
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
-  @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE',eager:true })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

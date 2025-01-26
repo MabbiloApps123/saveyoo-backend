@@ -32,7 +32,7 @@ export abstract class BaseModel extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'boolean', default: true, select: false })
+  @Column({ type: 'boolean', default: true, select: true })
   is_active!: boolean;
 
   @Column({ type: 'boolean', default: false, select: false })

@@ -21,15 +21,26 @@ export class FavouriteService {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    const favourite = new Favourite();
-    favourite.product = product;
-    favourite.user_id = userId;
+    // Check if the favourite already exists
+    const existingFavourite = await this.favouriteRepository.findOne({
+      where: { store_product: { id: productId }, user_id: userId },
+    });
 
+    if (existingFavourite) {
+      existingFavourite.is_active = !existingFavourite?.is_active;
+      return await this.favouriteRepository.save(existingFavourite);
+    }
+
+    // Create a new favourite if it doesn't exist
+    const favourite = new Favourite();
+    favourite.store_product = product;
+    favourite.user_id = userId;
+    favourite.is_active = true; // Default to true for new favourites
     return await this.favouriteRepository.save(favourite);
   }
 
   async findAll() {
-    return await this.favouriteRepository.find();
+    return await this.favouriteRepository.find({ relations: ['store_product'] });
   }
 
   async findOne(id: number) {
@@ -50,7 +61,7 @@ export class FavouriteService {
       if (!product) {
         throw new NotFoundException(`Product with ID ${updateFavouriteDto.store_product_id} not found`);
       }
-      favourite.product = product;
+      favourite.store_product = product;
     }
     if (updateFavouriteDto.is_active !== undefined) {
       favourite.is_active = updateFavouriteDto.is_active;
