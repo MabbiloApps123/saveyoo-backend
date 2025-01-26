@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { FavouriteService } from './favourite.service';
 import { CreateFavouriteDto } from './dto/create-favourite.dto';
 import { UpdateFavouriteDto } from './dto/update-favourite.dto';
@@ -18,8 +18,8 @@ export class FavouriteController {
   }
 
   @Get()
-  async findAll() {
-    let data = await this.favouriteService.findAll();
+  async findAll(@Query("user_id") user_id?:number) {
+    let data = await this.favouriteService.findAll(user_id);
     return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', data);
 
   }

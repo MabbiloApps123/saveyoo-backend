@@ -39,12 +39,15 @@ export class FavouriteService {
     return await this.favouriteRepository.save(favourite);
   }
 
-  async findAll() {
-    return await this.favouriteRepository.find({ relations: ['store_product'] });
+  async findAll(user_id?: number) {
+    return await this.favouriteRepository.find({
+      where: user_id ? { user_id: user_id } : {},
+      relations: ['store_product'],
+    });
   }
 
   async findOne(id: number) {
-    const favourite = await this.favouriteRepository.findOne({ where: { id } });
+    const favourite = await this.favouriteRepository.findOne({ where: { id }, relations: ['store_product'] });
     if (!favourite) {
       throw new NotFoundException(`Favourite with ID ${id} not found`);
     }
