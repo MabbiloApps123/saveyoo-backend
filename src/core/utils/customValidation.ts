@@ -15,7 +15,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const errorResponse = {
       status: false,
       statusCode: status,
-      message: status == 400 ? exceptionResponse?.message.join(',') : exceptionResponse?.message || 'Validation Error',
+      message:
+        status == 400
+          ? Array.isArray(exceptionResponse?.message)
+            ? exceptionResponse?.message.join(',')
+            : exceptionResponse?.message
+          : exceptionResponse?.message || 'Validation Error',
       error: exceptionResponse?.error || 'Internal Server Error',
     };
 

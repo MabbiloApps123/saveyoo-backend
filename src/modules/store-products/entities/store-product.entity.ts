@@ -5,7 +5,6 @@ import { Store } from 'src/modules/store/entities/store.entity';
 
 @Entity({ name: 'store_product' })
 export class StoreProduct extends BaseModel {
-
   @Column('decimal', { precision: 10, scale: 2 })
   original_price: number;
 
@@ -15,7 +14,7 @@ export class StoreProduct extends BaseModel {
   @Column()
   currency: string;
 
-  @Column({default:"available_now"})
+  @Column({ default: 'available_now' })
   deal_type: string;
 
   @Column()
@@ -26,16 +25,15 @@ export class StoreProduct extends BaseModel {
 
   @Column('timestamp')
   pickup_end_time: Date;
-  
-  @Column({default:false})
+
+  @Column({ default: false })
   is_surprise: boolean;
 
-  @ManyToOne(() => Store, (store) => store.storeProducts, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Store, (store) => store.storeProducts, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
-  @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE',eager:true })
+  @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }
-
