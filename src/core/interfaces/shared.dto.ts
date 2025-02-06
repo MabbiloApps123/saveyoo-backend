@@ -4,6 +4,7 @@ import {
   IsNumber, IsOptional,
   IsString
 } from 'class-validator';
+import { StoreProduct } from 'src/modules/store-products/entities/store-product.entity';
 
 export enum BlockingUserType {
   USER = 'USER'
@@ -27,3 +28,8 @@ export class PaginationDto {
   @IsNumber()
   limit?: number;
 }
+
+export type StoreProductWithDistance = {
+  storeProduct: StoreProduct;
+  distance: number;
+};

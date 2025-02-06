@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsPositive, ValidateIf, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsDate, IsPositive, ValidateIf, IsBoolean, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateStoreProductDto {
@@ -42,15 +42,19 @@ export class CreateStoreProductDto {
   @ApiProperty({ example: false })
   @IsBoolean()
   is_surprise: boolean;
-  
-  @ApiProperty({ example: '2024-11-22T14:00:00', description: 'Pickup start time in ISO format' })
-  @IsDate()
-  @Type(() => Date)
-  pickup_start_time: Date;
 
-  @ApiProperty({ example: '2024-11-22T18:00:00', description: 'Pickup end time in ISO format' })
-  @IsDate()
-  @Type(() => Date)
+  @ApiProperty({ example: '18:00', description: 'Pickup start time (HH:mm)' })
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+    message: 'pickup_start_time must be in HH:mm format',
+  })
+  pickup_start_time: string;
+
+  @ApiProperty({ example: '20:00', description: 'Pickup end time (HH:mm)' })
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+    message: 'pickup_end_time must be in HH:mm format',
+  })
   @ValidateIf((dto) => dto.pickup_end_time > dto.pickup_start_time)
-  pickup_end_time: Date;
+  pickup_end_time: string;
 }

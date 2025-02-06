@@ -31,8 +31,9 @@ export class StoreProductsController {
     @Query('longitude') longitude: number,
     @Query('radius') radius: number,
     @Query('category') category: string,
+    @Query('user_id') user_id: number, 
   ) {
-    const stores = await this.storeProductsService.getProductsByDeal(category);
+    const stores = await this.storeProductsService.getTimeSensitiveProducts(latitude,longitude,category,user_id);
     return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
   }
 

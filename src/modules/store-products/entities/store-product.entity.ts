@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { BaseModel } from 'src/core/database/BaseModel';
 import { Store } from 'src/modules/store/entities/store.entity';
+import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
 
 @Entity({ name: 'store_product' })
 export class StoreProduct extends BaseModel {
@@ -14,17 +15,17 @@ export class StoreProduct extends BaseModel {
   @Column()
   currency: string;
 
-  @Column({ default: 'available_now' })
-  deal_type: string;
+  @Column({ default: 'vegan' })
+  category: string;
 
   @Column()
   quantity: number;
 
-  @Column('timestamp')
-  pickup_start_time: Date;
+  @Column({type:'time',default:"17:00"})
+  pickup_start_time: string;
 
-  @Column('timestamp')
-  pickup_end_time: Date;
+  @Column({type:'time',default:"21:00"})
+  pickup_end_time: string;
 
   @Column({ default: false })
   is_surprise: boolean;
@@ -36,4 +37,7 @@ export class StoreProduct extends BaseModel {
   @ManyToOne(() => Product, (product) => product.storeProducts, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'product_id' })
   product: Product;
+
+  @ManyToOne(() => Favourite, (favourite) => favourite.store_product)
+  favourites: Favourite[];
 }

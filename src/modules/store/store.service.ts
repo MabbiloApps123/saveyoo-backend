@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { BaseService } from 'src/base.service';
@@ -14,9 +14,15 @@ export class StoreService extends BaseService<Store> {
     this.repository = storeRepository;
   }
   async create(createStoreDto: CreateStoreDto) {
+    // Remove extra quotes if present
+    // const sanitizedLocation = {
+    //   type: 'Point',
+    //   coordinates: [-74.006, 40.7128], // Replace with actual data
+    // };
+    // createStoreDto.location = sanitizedLocation as unknown as string;
     return await super.create(createStoreDto);
   }
-  async findAll(filters:Record<string, any>) {
+  async findAll(filters: Record<string, any>) {
     return await this.repository.findBy(filters);
   }
 
@@ -37,7 +43,8 @@ export class StoreService extends BaseService<Store> {
 
   async findStoresWithinRadius(latitude: number, longitude: number, radius: number): Promise<Store[]> {
     const radiusInKm = radius / 1000;
-    return this.repository.createQueryBuilder('store')
+    return this.repository
+      .createQueryBuilder('store')
       .select()
       .addSelect(
         `( 6371 * acos( cos( radians(:latitude) ) * cos( radians( store.latitude ) ) * cos( radians( store.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( store.latitude ) ) ) )`,

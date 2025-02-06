@@ -15,8 +15,9 @@ export class UsersController {
     @Query('latitude') latitude: number,
     @Query('longitude') longitude: number,
     @Query('radius') radius: number,
+    @Query('user_id') user_id: number,
   ) {
-    const stores = await this.homeService.getHomePageData(latitude, longitude, radius);
+    const stores = await this.homeService.getHomePageData(latitude, longitude, radius,user_id);
     return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
   }
   @Get(':user_id')

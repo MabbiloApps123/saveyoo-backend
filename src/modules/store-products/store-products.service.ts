@@ -4,7 +4,6 @@ import { Between, Repository } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Store } from '../store/entities/store.entity';
 import { StoreProduct } from './entities/store-product.entity';
-import { LessThanOrEqual, MoreThan } from 'typeorm';
 
 @Injectable()
 export class StoreProductService {
@@ -116,19 +115,110 @@ export class StoreProductService {
     });
   }
 
-  async getProductsByDeal(category: string): Promise<any[]> {
-    const storeProducts = await this.storeProductRepository.find({
-      where: { deal_type: category },
-      relations: ['product', 'store'],
-    });
+  async getProductsByDeal(category: string) {
+    // const storeProducts = await this.storeProductRepository.find({
+    //   where: { deal_type: category },
+    //   relations: ['product', 'store'],
+    // });
 
-    return this.filterAndMap(storeProducts);
+    // return await this.getTimeSensitiveProducts(11.9834221, 78.9677772,category,);
   }
 
-  private filterAndMap(storeProducts: StoreProduct[]) {
+  async getTimeSensitiveProducts(
+    userLat: number,
+    userLng: number,
+    sectionType: string,
+    user_id: number,
+  ): Promise<any[]> {
+    const currentTime = new Date(2025, 1, 5, 9, 30, 0);
+    const currentHourMinute = currentTime.toTimeString().split(' ')[0]; // Extracts HH:MM:SS
+
+    let queryBuilder = this.storeProductRepository
+      .createQueryBuilder('storeProduct')
+      .innerJoinAndSelect('storeProduct.product', 'product')
+      .innerJoinAndSelect('storeProduct.store', 'store')
+      .leftJoinAndSelect(
+        'storeProduct.favourites',
+        'favourite',
+        'favourite.store_product = storeProduct.id AND favourite.user_id = :user_id',
+        { user_id },
+      )
+      .addSelect('COALESCE(favourite.is_active, FALSE)', 'is_favourite')
+      .andWhere('storeProduct.quantity > 0') // Exclude sold-out deals
+      .addSelect(
+        `ST_Distance(
+          store.location,
+          ST_SetSRID(ST_MakePoint(:userLng, :userLat), 4326) 
+        ) / 1000`,
+        'distance',
+      )
+      .setParameters({ userLng, userLat })
+      .limit(5);
+
+    // if (selectedProductIds.length > 0) {
+    //   queryBuilder.andWhere('storeProduct.id NOT IN (:...selectedProductIds)', { selectedProductIds });
+    // }
+
+
+    // Apply filters based on section type
+    switch (sectionType) {
+      case 'just_for_you':
+        queryBuilder = queryBuilder
+          .andWhere('storeProduct.category IN (:...preferences)', {
+            preferences: ['vegan', 'vegetarian', 'gluten-free'],
+          })
+          // .addOrderBy('storeProduct.popularity', 'DESC');
+        break;
+
+      case 'last_chance_deals':
+        queryBuilder = queryBuilder
+          .orderBy('storeProduct.pickup_end_time', 'ASC')
+          .addOrderBy('storeProduct.quantity', 'ASC');
+        break;
+
+      case 'available_now':
+        queryBuilder = queryBuilder
+          .andWhere(
+            `
+          storeProduct.pickup_start_time <= :currentHourMinute
+          AND storeProduct.pickup_end_time >= :oneHourLater
+        `,
+            {
+              currentHourMinute,
+              oneHourLater: new Date(currentTime.getTime() + 60 * 60 * 1000).toTimeString().split(' ')[0], // Adds 1 hour
+            },
+          )
+          .addOrderBy('distance', 'ASC'); // Show closest first 
+        break;
+
+      case 'dinnertime_deals':
+        queryBuilder = queryBuilder
+          .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) BETWEEN 17 AND 22')
+          .addOrderBy('distance', 'ASC')
+          .addOrderBy('storeProduct.quantity', 'ASC');
+        break;
+
+      default:
+        throw new Error(`Invalid section type: ${sectionType}`);
+    }
+
+    // Execute the query and return the results
+    const { entities, raw }: { entities: StoreProduct[]; raw: any[] } = await queryBuilder.getRawAndEntities();
+    const results: any[] = entities.map((entity, index) => ({
+      ...entity,
+      distance: raw[index]?.distance as number,
+      is_favourite: raw[index]?.is_favourite as boolean,
+    }));
+
+    // selectedProductIds.push(...results.map((product) => product.id));
+
+    return this.filterAndMap(results);
+  }
+
+  private filterAndMap(storeProducts: (StoreProduct & { distance: number; is_favourite: boolean })[]) {
     return storeProducts.map((storeProduct) => ({
-      store_product_id: storeProduct.id,
       product_id: storeProduct.product.id,
+      store_product_id: storeProduct.id,
       store_id: storeProduct.store.id,
       original_price: storeProduct.original_price,
       discounted_price: storeProduct.discounted_price,
@@ -138,8 +228,8 @@ export class StoreProductService {
       pickup_end_time: storeProduct.pickup_end_time,
       product: storeProduct.product.name,
       product_image: storeProduct.product.product_image,
-      is_favourite: true,
-      distance: 4.0,
+      is_favourite: storeProduct.is_favourite,
+      distance: storeProduct.distance,
       ratings: 4.5,
       store: {
         id: storeProduct.store.id,
@@ -151,31 +241,4 @@ export class StoreProductService {
       },
     }));
   }
-
-  // async getProductsByDeal(category: string, userLat: number, userLng: number): Promise<any[]> {
-  //     const currentTime = new Date();
-
-  //     // Query to get deals based on the given filters
-  //     const storeProducts = await this.storeProductRepository
-  //         .createQueryBuilder('storeProduct')
-  //         .innerJoinAndSelect('storeProduct.product', 'product')
-  //         .innerJoinAndSelect('storeProduct.store', 'store')
-  //         .where('storeProduct.deal_type = :category', { category })
-  //         .andWhere('storeProduct.pickup_end_time > :currentTime', { currentTime }) // Time-sensitive deals
-  //         .andWhere('storeProduct.quantity > 0') // Exclude sold-out deals
-  //         .orderBy('storeProduct.pickup_end_time', 'ASC') // Closest expiry first
-  //         .addOrderBy('storeProduct.quantity', 'ASC') // Low stock next
-  //         .addOrderBy(
-  //             `ST_Distance_Sphere(
-  //                 POINT(store.longitude, store.latitude),
-  //                 POINT(:userLng, :userLat)
-  //             )`,
-  //             'ASC'
-  //         ) // Closest stores
-  //         .setParameters({ userLat, userLng })
-  //         .getMany();
-
-  //     // Return the filtered and mapped results
-  //     return this.filterAndMap(storeProducts);
-  // }
 }

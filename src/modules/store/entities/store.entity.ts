@@ -1,5 +1,4 @@
 import { BaseModel } from 'src/core/database/BaseModel';
-import { Product } from 'src/modules/products/entities/product.entity';
 import { StoreProduct } from 'src/modules/store-products/entities/store-product.entity';
 import { Column, Entity, Geometry, OneToMany } from 'typeorm';
 
@@ -72,7 +71,7 @@ export class Store extends BaseModel {
   bank_branch: string;
 
   @Column('geometry', { nullable:true,spatialFeatureType: 'Point', srid: 4326 })
-  location: string;
+  location: object;
 
   @Column({ type: 'decimal',default:13.0843, precision: 10, scale: 6 })
   latitude: number;
