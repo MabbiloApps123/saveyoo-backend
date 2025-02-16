@@ -48,4 +48,3 @@ src/core/database/database.config.ts
 .scannerworks
 .gitlab-ci.yml
 Notes
-package-lock.json
