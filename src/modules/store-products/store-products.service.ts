@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Repository, SelectQueryBuilder } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Store } from '../store/entities/store.entity';
 import { StoreProduct } from './entities/store-product.entity';
+import { TimeSensitiveProductsDto, TimeSensitiveProductsDtoExplore } from './dto/utility.dto';
+import User from '../users/entities/user.entity';
 
 @Injectable()
 export class StoreProductService {
@@ -14,6 +16,8 @@ export class StoreProductService {
     private readonly storeRepository: Repository<Store>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // Create a new store-product entry
@@ -74,7 +78,7 @@ export class StoreProductService {
   }
 
   // Get all products for a specific store
-  async getProductsByStore(storeId: number, filters?:Record<string,any>): Promise<any[]> {
+  async getProductsByStore(storeId: number, filters?: Record<string, any>): Promise<any[]> {
     const store = await this.storeRepository.findOne({ where: { id: storeId } });
     if (!store) {
       throw new NotFoundException(`Store with ID ${storeId} not found`);
@@ -87,7 +91,7 @@ export class StoreProductService {
     }
 
     let storeProducts = await this.storeProductRepository.find({
-      where: { store,...dateFilter },
+      where: { store, ...dateFilter },
       relations: ['product', 'store'],
     });
 
@@ -115,104 +119,205 @@ export class StoreProductService {
     });
   }
 
-  async getProductsByDeal(category: string) {
-    // const storeProducts = await this.storeProductRepository.find({
-    //   where: { deal_type: category },
-    //   relations: ['product', 'store'],
-    // });
+  async getTimeSensitiveProducts(dto: TimeSensitiveProductsDtoExplore) {
+    const {
+      userLat,
+      userLng,
+      sectionType,
+      user_id,
+      radius,
+      selectedProductIds,
+      foodType,
+      dietPreference,
+      startTime,
+      endTime,
+      search,
+      page,
+      limit,
+    } = dto;
+    const currentTime = new Date();
+    // const currentTime = new Date(2025, 1, 5, 9, 30, 0);
+    const currentHourMinute = this.formatTime(currentTime);
+    const oneHourLater = this.formatTime(new Date(currentTime.getTime() + 60 * 60 * 1000));
 
-    // return await this.getTimeSensitiveProducts(11.9834221, 78.9677772,category,);
+    let queryBuilder = this.baseQuery();
+    this.applyFavouriteFilter(queryBuilder, user_id);
+    this.applyLocationFilter(queryBuilder, userLat, userLng, radius);
+
+    if (selectedProductIds && selectedProductIds.length > 0) {
+      queryBuilder.andWhere('storeProduct.id NOT IN (:...selectedProductIds)', { selectedProductIds });
+    }
+
+    // Apply optional filters
+    this.applySectionFilters(queryBuilder, sectionType, currentHourMinute, oneHourLater, dietPreference);
+    this.applyProductFilters(queryBuilder, foodType, dietPreference);
+    this.applyTimeFilters(queryBuilder, startTime, endTime);
+    this.applySearchFilter(queryBuilder, search);
+
+    // Apply pagination
+    this.applyPagination(queryBuilder, page, limit);
+
+    // Execute query and process results
+    const { entities, raw } = await queryBuilder.getRawAndEntities();
+    const results = this.mapResults(entities, raw);
+
+    selectedProductIds?.push(...results.map((product) => product.id));
+
+    return this.filterAndMap(results);
   }
 
-  async getTimeSensitiveProducts(
-    userLat: number,
-    userLng: number,
-    sectionType: string,
-    user_id: number,
-  ): Promise<any[]> {
-    const currentTime = new Date(2025, 1, 5, 9, 30, 0);
-    const currentHourMinute = currentTime.toTimeString().split(' ')[0]; // Extracts HH:MM:SS
-
+  private baseQuery() {
     let queryBuilder = this.storeProductRepository
       .createQueryBuilder('storeProduct')
       .innerJoinAndSelect('storeProduct.product', 'product')
       .innerJoinAndSelect('storeProduct.store', 'store')
-      .leftJoinAndSelect(
-        'storeProduct.favourites',
-        'favourite',
-        'favourite.store_product = storeProduct.id AND favourite.user_id = :user_id',
-        { user_id },
-      )
-      .addSelect('COALESCE(favourite.is_active, FALSE)', 'is_favourite')
-      .andWhere('storeProduct.quantity > 0') // Exclude sold-out deals
-      .addSelect(
-        `ST_Distance(
-          store.location,
-          ST_SetSRID(ST_MakePoint(:userLng, :userLat), 4326) 
+      .andWhere('storeProduct.quantity > 0');
+
+    return queryBuilder;
+  }
+
+  // Extract favourite filter
+  private applyFavouriteFilter(queryBuilder: SelectQueryBuilder<StoreProduct>, user_id: number) {
+    if (user_id) {
+      return queryBuilder
+        .leftJoinAndSelect(
+          'storeProduct.favourites',
+          'favourite',
+          'favourite.store_product = storeProduct.id AND favourite.user_id = :user_id',
+          { user_id },
+        )
+        .addSelect('COALESCE(favourite.is_active, FALSE)', 'is_favourite');
+    }
+  }
+
+  // Extract location filter
+  private applyLocationFilter(
+    queryBuilder: SelectQueryBuilder<StoreProduct>,
+    userLat: number,
+    userLng: number,
+    radius: number,
+  ) {
+    if (userLat && userLng) {
+      return queryBuilder
+        .addSelect(
+          `ST_DistanceSphere(
+          ST_MakePoint(store.longitude, store.latitude),
+          ST_MakePoint(:userLng, :userLat)
         ) / 1000`,
-        'distance',
-      )
-      .setParameters({ userLng, userLat })
-      .limit(5);
+          'distance',
+        )
+        .setParameters({ userLng, userLat })
+        .groupBy(
+          'storeProduct.id, storeProduct.quantity, storeProduct.store_id, store.id, store.longitude, store.latitude, favourite.is_active, product.id,favourite.id',
+        )
+        .having(
+          `ST_DistanceSphere(
+          ST_MakePoint(store.longitude, store.latitude),
+          ST_MakePoint(:userLng, :userLat)
+        ) / 1000 <= ${radius}`,
+        );
+    }
+  }
 
-    // if (selectedProductIds.length > 0) {
-    //   queryBuilder.andWhere('storeProduct.id NOT IN (:...selectedProductIds)', { selectedProductIds });
-    // }
+  //  Handles different filters based on sectionType
+  private async applySectionFilters(
+    queryBuilder: SelectQueryBuilder<StoreProduct>,
+    sectionType: string,
+    currentHourMinute: string,
+    oneHourLater: string,
+    preferences: string[],
+  ) {
+    if (sectionType) {
+      switch (sectionType) {
+        case 'just_for_you':
+          this.applyJustForYouFilters(queryBuilder, preferences);
+          break;
 
+        case 'last_chance_deals':
+          queryBuilder.orderBy('storeProduct.pickup_end_time', 'ASC').addOrderBy('storeProduct.quantity', 'ASC');
+          break;
 
-    // Apply filters based on section type
-    switch (sectionType) {
-      case 'just_for_you':
-        queryBuilder = queryBuilder
-          .andWhere('storeProduct.category IN (:...preferences)', {
-            preferences: ['vegan', 'vegetarian', 'gluten-free'],
-          })
-          // .addOrderBy('storeProduct.popularity', 'DESC');
-        break;
+        case 'available_now':
+          queryBuilder
+            .andWhere(
+              `storeProduct.pickup_start_time <= :currentHourMinute AND storeProduct.pickup_end_time >= :oneHourLater`,
+              {
+                currentHourMinute,
+                oneHourLater,
+              },
+            )
+            .addOrderBy('distance', 'ASC');
+          break;
 
-      case 'last_chance_deals':
-        queryBuilder = queryBuilder
-          .orderBy('storeProduct.pickup_end_time', 'ASC')
-          .addOrderBy('storeProduct.quantity', 'ASC');
-        break;
+        case 'dinnertime_deals':
+          queryBuilder
+            .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) BETWEEN 17 AND 23')
+            .addOrderBy('distance', 'DESC')
+            .addOrderBy('storeProduct.quantity', 'ASC');
+          break;
 
-      case 'available_now':
-        queryBuilder = queryBuilder
-          .andWhere(
-            `
-          storeProduct.pickup_start_time <= :currentHourMinute
-          AND storeProduct.pickup_end_time >= :oneHourLater
-        `,
-            {
-              currentHourMinute,
-              oneHourLater: new Date(currentTime.getTime() + 60 * 60 * 1000).toTimeString().split(' ')[0], // Adds 1 hour
-            },
-          )
-          .addOrderBy('distance', 'ASC'); // Show closest first 
-        break;
+        default:
+          throw new Error(`Invalid section type: ${sectionType}`);
+      }
+    }
+  }
+  private async applyJustForYouFilters(queryBuilder: SelectQueryBuilder<StoreProduct>, preferences: string[]) {
+    if (preferences?.length) {
+      queryBuilder.andWhere('storeProduct.diet_preference IN (:...preferences)', {
+        preferences: preferences,
+      });
+    }
+  }
+  private applyTimeFilters(queryBuilder: SelectQueryBuilder<StoreProduct>, startTime?: string, endTime?: string) {
+    if (startTime && endTime) {
+      queryBuilder.andWhere(
+        `storeProduct.pickup_start_time >= :startTime AND storeProduct.pickup_end_time <= :endTime`,
+        { startTime, endTime },
+      );
+    }
+  }
 
-      case 'dinnertime_deals':
-        queryBuilder = queryBuilder
-          .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) BETWEEN 17 AND 22')
-          .addOrderBy('distance', 'ASC')
-          .addOrderBy('storeProduct.quantity', 'ASC');
-        break;
-
-      default:
-        throw new Error(`Invalid section type: ${sectionType}`);
+  private applyProductFilters(
+    queryBuilder: SelectQueryBuilder<StoreProduct>,
+    foodType?: string,
+    dietPreference?: string[],
+  ) {
+    if (foodType) {
+      queryBuilder.andWhere('storeProduct.food_type = :foodType', { foodType });
     }
 
-    // Execute the query and return the results
-    const { entities, raw }: { entities: StoreProduct[]; raw: any[] } = await queryBuilder.getRawAndEntities();
-    const results: any[] = entities.map((entity, index) => ({
+    if (dietPreference) {
+      queryBuilder.andWhere('storeProduct.diet_preference IN (:...preferences)', { preferences: dietPreference });
+    }
+  }
+
+  private applySearchFilter(queryBuilder: SelectQueryBuilder<StoreProduct>, search?: string) {
+    if (search) {
+      queryBuilder.andWhere(`(product.name ILIKE :search OR store.name ILIKE :search)`, { search: `%${search}%` });
+    }
+  }
+
+  private applyPagination(queryBuilder: SelectQueryBuilder<StoreProduct>, page: number, limit: number) {
+    if (page && limit) {
+      const offset = (page - 1) * limit;
+      queryBuilder.skip(offset).take(limit);
+    } else {
+      queryBuilder.limit(5);
+    }
+  }
+
+  // Formats date to HH:MM:SS
+  private formatTime(date: Date): string {
+    return date.toTimeString().split(' ')[0];
+  }
+
+  //  Maps raw results to include extra fields
+  private mapResults(entities: StoreProduct[], raw: any[]): any[] {
+    return entities.map((entity, index) => ({
       ...entity,
       distance: raw[index]?.distance as number,
       is_favourite: raw[index]?.is_favourite as boolean,
     }));
-
-    // selectedProductIds.push(...results.map((product) => product.id));
-
-    return this.filterAndMap(results);
   }
 
   private filterAndMap(storeProducts: (StoreProduct & { distance: number; is_favourite: boolean })[]) {

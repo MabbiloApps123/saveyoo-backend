@@ -1,23 +1,23 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import HandleResponse from 'src/core/utils/handle_response';
 import { EC200, EM100, EM106, EM116 } from 'src/core/constants';
 import { HomeService } from './home.service';
+import { TimeSensitiveProductsDto } from '../store-products/dto/utility.dto';
 
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
   constructor(private readonly userService: UsersService,private readonly homeService: HomeService) {}
 
-  @Get('/home') async getStoresWithinRadius(
-    @Query('latitude') latitude: number,
-    @Query('longitude') longitude: number,
-    @Query('radius') radius: number,
-    @Query('user_id') user_id: number,
+  @Get('/home')
+  @UsePipes(new ValidationPipe({ transform: true }))  // Enables automatic transformation & validation
+  async getStoresWithinRadius(
+    @Query() query:TimeSensitiveProductsDto
   ) {
-    const stores = await this.homeService.getHomePageData(latitude, longitude, radius,user_id);
+    const stores = await this.homeService.getHomePageData(query);
     return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
   }
   @Get(':user_id')

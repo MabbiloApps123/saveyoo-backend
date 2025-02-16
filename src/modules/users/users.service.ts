@@ -102,10 +102,6 @@ import Otp from 'src/modules/users/entities/otp.entity';
 import User from 'src/modules/users/entities/user.entity';
 import moment from 'moment';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Store } from '../store/entities/store.entity';
-import { StoreService } from '../store/store.service';
-import { StoreRepository } from '../store/store.repository';
-import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -113,8 +109,6 @@ export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Otp) private readonly otpRepository: Repository<Otp>,
-    @InjectRepository(StoreRepository) private readonly storeRepository: StoreRepository,
-    @Inject(ProductsService) private readonly productsService: ProductsService,
   ) {
     super(userRepository.manager); // Pass EntityManager to BaseService
     this.repository = userRepository; // Set the repository for BaseService

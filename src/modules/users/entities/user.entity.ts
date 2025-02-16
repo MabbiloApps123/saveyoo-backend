@@ -115,6 +115,9 @@ export default class User extends BaseModel {
   @Column({ type: 'text', nullable: true })
   device_token: string;
 
-  @Column({ type: 'boolean', default: false }) 
-  is_blocked: boolean;  
+  @Column({ type: 'boolean', default: false })
+  is_blocked: boolean;
+
+  @Column({ type: 'text', array: true, default: () => 'ARRAY[]::text[]' })
+  preferences: string[];
 }

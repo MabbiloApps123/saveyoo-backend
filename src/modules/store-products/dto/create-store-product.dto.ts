@@ -29,10 +29,15 @@ export class CreateStoreProductDto {
   @IsNotEmpty()
   currency: string;
 
-  @ApiProperty({ example: 'last_chance_deals,available_now,dinnertime_deals', description: 'Currency of the pricing' })
+  @ApiProperty({ example: 'vegan', description: 'Category of the product' })
   @IsString()
   @IsNotEmpty()
-  deal_type: string;
+  diet_preference: string;
+
+  @ApiProperty({ example: 'meal', description: 'Type of the product' })
+  @IsString()
+  @IsNotEmpty()
+  food_type: string;
 
   @ApiProperty({ example: 10, description: 'Available quantity' })
   @IsNumber()

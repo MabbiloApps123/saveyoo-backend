@@ -13,6 +13,7 @@ import {
   IsPhoneNumber,
   IsOptional,
   IsNumber,
+  IsArray,
 } from 'class-validator';
 
 enum Gender {
@@ -68,6 +69,11 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   device_token: string;
+  
+  @ApiProperty()
+  @IsArray()
+  @IsOptional()
+  preferences: string[];
 
   @ApiProperty()
   @IsOptional()

@@ -83,24 +83,24 @@ export class CreateStoreDto {
   @IsNumber()
   owner_id: number;
 
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: {
+  //     type: 'Point',
+  //     coordinates: [-74.006, 40.7128], // Replace with actual data
+  //   },
+  // })
+  // location: string;
+
+  @ApiProperty({ example: 13.0827 })
   @IsNotEmpty()
-  @ApiProperty({
-    example: {
-      type: 'Point',
-      coordinates: [-74.006, 40.7128], // Replace with actual data
-    },
-  })
-  location: string;
+  @IsNumber()
+  latitude: number;
 
-  // @ApiProperty({ example: 13.0827 })
-  // @IsNotEmpty()
-  // @IsNumber()
-  // latitude: number;
-
-  // @ApiProperty({ example: 80.2707 })
-  // @IsNotEmpty()
-  // @IsNumber()
-  // longitude: number;
+  @ApiProperty({ example: 80.2707 })
+  @IsNotEmpty()
+  @IsNumber()
+  longitude: number;
 
   @ApiProperty({ example: '2024-11-22T14:00:00', description: 'The start date of the business' })
   @IsOptional()

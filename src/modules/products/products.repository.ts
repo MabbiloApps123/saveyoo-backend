@@ -40,7 +40,7 @@ export class ProductRepository extends Repository<Product> {
         startTime,
         endTime,
       })
-      .skip((page - 1) * limit)
+      .skip((page - 1) * limit) 
       .take(limit)
       .getManyAndCount();
     return { data, total };

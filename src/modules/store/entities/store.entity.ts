@@ -70,8 +70,8 @@ export class Store extends BaseModel {
   @Column({ default: null,select:false })
   bank_branch: string;
 
-  @Column('geometry', { nullable:true,spatialFeatureType: 'Point', srid: 4326 })
-  location: object;
+  // @Column('geometry', { nullable:true,spatialFeatureType: 'Point', srid: 4326 })
+  // location: object;
 
   @Column({ type: 'decimal',default:13.0843, precision: 10, scale: 6 })
   latitude: number;

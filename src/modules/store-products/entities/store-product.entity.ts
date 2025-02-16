@@ -15,8 +15,11 @@ export class StoreProduct extends BaseModel {
   @Column()
   currency: string;
 
+  @Column({ default: 'meals' })
+  food_type: string;
+
   @Column({ default: 'vegan' })
-  category: string;
+  diet_preference: string;
 
   @Column()
   quantity: number;
