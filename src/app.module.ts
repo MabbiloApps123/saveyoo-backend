@@ -12,7 +12,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { DBconfig } from './config';
 import { StoreProductsModule } from './modules/store-products/store-products.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
-import { DatabaseSeeder } from './seeds/database.seeder';
+// import { DatabaseSeeder } from './seeds/database.seeder';
 
 console.log('env--->',DBconfig)
 @Module({
@@ -46,7 +46,7 @@ console.log('env--->',DBconfig)
     FavouriteModule
   ],
   controllers: [AppController],
-  providers: [AppService,DatabaseSeeder],
+  providers: [AppService],
 
 })
 export class AppModule implements NestModule {
