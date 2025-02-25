@@ -12,6 +12,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { DBconfig } from './config';
 import { StoreProductsModule } from './modules/store-products/store-products.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
+import { UserAddressesModule } from './modules/user-addresses/user-addresses.module';
 // import { DatabaseSeeder } from './seeds/database.seeder';
 
 console.log('env--->',DBconfig)
@@ -43,7 +44,8 @@ console.log('env--->',DBconfig)
     StoreModule,
     ProductsModule,
     StoreProductsModule,
-    FavouriteModule
+    FavouriteModule,
+    UserAddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

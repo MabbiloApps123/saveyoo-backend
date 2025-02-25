@@ -3,6 +3,7 @@ import { Product } from '../../products/entities/product.entity';
 import { BaseModel } from 'src/core/database/BaseModel';
 import { Store } from 'src/modules/store/entities/store.entity';
 import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
+import { Reservation } from 'src/modules/reservation/entities/reservation.entity';
 
 @Entity({ name: 'store_product' })
 export class StoreProduct extends BaseModel {
@@ -24,10 +25,10 @@ export class StoreProduct extends BaseModel {
   @Column()
   quantity: number;
 
-  @Column({type:'time',default:"17:00"})
+  @Column({ type: 'time', default: '17:00' })
   pickup_start_time: string;
 
-  @Column({type:'time',default:"21:00"})
+  @Column({ type: 'time', default: '21:00' })
   pickup_end_time: string;
 
   @Column({ default: false })
@@ -43,4 +44,7 @@ export class StoreProduct extends BaseModel {
 
   @ManyToOne(() => Favourite, (favourite) => favourite.store_product)
   favourites: Favourite[];
+
+  @OneToMany(() => Reservation, (reservation) => reservation.storeProduct)
+  reservations: Reservation[];
 }

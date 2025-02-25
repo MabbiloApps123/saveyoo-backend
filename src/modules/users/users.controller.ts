@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import HandleResponse from 'src/core/utils/handle_response';
 import { EC200, EM100, EM106, EM116 } from 'src/core/constants';
 import { HomeService } from './home.service';
 import { TimeSensitiveProductsDto } from '../store-products/dto/utility.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('User')
 @Controller('user')
