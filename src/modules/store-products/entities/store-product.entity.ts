@@ -4,6 +4,7 @@ import { BaseModel } from 'src/core/database/BaseModel';
 import { Store } from 'src/modules/store/entities/store.entity';
 import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
 import { Reservation } from 'src/modules/reservation/entities/reservation.entity';
+import { Cart } from 'src/modules/cart/entities/cart.entity';
 
 @Entity({ name: 'store_product' })
 export class StoreProduct extends BaseModel {
@@ -47,4 +48,7 @@ export class StoreProduct extends BaseModel {
 
   @OneToMany(() => Reservation, (reservation) => reservation.storeProduct)
   reservations: Reservation[];
+
+  @OneToMany(() => Cart, (cart) => cart.storeProduct)
+  carts: Cart[];
 }

@@ -13,7 +13,7 @@ import { DBconfig } from './config';
 import { StoreProductsModule } from './modules/store-products/store-products.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
 import { UserAddressesModule } from './modules/user-addresses/user-addresses.module';
-// import { DatabaseSeeder } from './seeds/database.seeder';
+import { CartModule } from './modules/cart/cart.module'; // Import CartModule
 
 console.log('env--->',DBconfig)
 @Module({
@@ -46,6 +46,8 @@ console.log('env--->',DBconfig)
     StoreProductsModule,
     FavouriteModule,
     UserAddressesModule,
+    // ReservationModule,
+    CartModule, // Add CartModule
   ],
   controllers: [AppController],
   providers: [AppService],
