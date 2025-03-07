@@ -230,22 +230,21 @@ export class StoreProductService {
     if (sectionType) {
       switch (sectionType) {
         case 'just_for_you':
-          this.applyJustForYouFilters(queryBuilder, preferences);
+          this.applyJustForYouFilters(queryBuilder, preferences, currentHourMinute);
           break;
 
         case 'last_chance_deals':
-          queryBuilder.orderBy('storeProduct.pickup_end_time', 'ASC').addOrderBy('storeProduct.quantity', 'ASC');
+          queryBuilder
+            .andWhere('storeProduct.quantity < 15') // Low-stock items
+            .andWhere('storeProduct.pickup_end_time >= :currentHourMinute', { currentHourMinute }) // Avoid past-time items
+            // .orWhere('storeProduct.clearance_sale = TRUE') // Clearance sale item
+            .orderBy('storeProduct.pickup_end_time', 'ASC')
+            .addOrderBy('storeProduct.quantity', 'ASC');
           break;
 
         case 'available_now':
           queryBuilder
-            .andWhere(
-              `storeProduct.pickup_start_time <= :currentHourMinute AND storeProduct.pickup_end_time >= :oneHourLater`,
-              {
-                currentHourMinute,
-                oneHourLater,
-              },
-            )
+            .andWhere('storeProduct.pickup_end_time >= :currentHourMinute', { currentHourMinute })
             .addOrderBy('distance', 'ASC');
           break;
 
@@ -261,11 +260,17 @@ export class StoreProductService {
       }
     }
   }
-  private async applyJustForYouFilters(queryBuilder: SelectQueryBuilder<StoreProduct>, preferences: string[]) {
+  private async applyJustForYouFilters(
+    queryBuilder: SelectQueryBuilder<StoreProduct>,
+    preferences: string[],
+    currentHourMinute: string,
+  ) {
     if (preferences?.length) {
-      queryBuilder.andWhere('storeProduct.diet_preference IN (:...preferences)', {
-        preferences: preferences,
-      });
+      queryBuilder
+        .andWhere('storeProduct.pickup_end_time >= :currentHourMinute', { currentHourMinute })
+        .andWhere('storeProduct.diet_preference IN (:...preferences)', {
+          preferences: preferences,
+        });
     }
   }
   private applyTimeFilters(queryBuilder: SelectQueryBuilder<StoreProduct>, startTime?: string, endTime?: string) {
