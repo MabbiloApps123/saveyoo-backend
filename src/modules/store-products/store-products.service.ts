@@ -313,7 +313,7 @@ export class StoreProductService {
 
   // Formats date to HH:MM:SS
   private formatTime(date: Date): string {
-    return date.toTimeString().split(' ')[0];
+    return date.toISOString().substring(11, 19);;
   }
 
   //  Maps raw results to include extra fields
