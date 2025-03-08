@@ -244,13 +244,19 @@ export class StoreProductService {
 
         case 'available_now':
           queryBuilder
-            .andWhere('storeProduct.pickup_end_time >= :currentHourMinute', { currentHourMinute })
+            .andWhere(
+              'storeProduct.pickup_start_time <= :oneHourLater AND storeProduct.pickup_end_time >= :currentHourMinute',
+              {
+                currentHourMinute,
+                oneHourLater,
+              },
+            )
             .addOrderBy('distance', 'ASC');
           break;
 
         case 'dinnertime_deals':
           queryBuilder
-            .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) BETWEEN 17 AND 23')
+            .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) >= 17')
             .addOrderBy('distance', 'DESC')
             .addOrderBy('storeProduct.quantity', 'ASC');
           break;
@@ -313,7 +319,13 @@ export class StoreProductService {
 
   // Formats date to HH:MM:SS
   private formatTime(date: Date): string {
-    return date.toISOString().substring(11, 19);;
+    return date.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
   }
 
   //  Maps raw results to include extra fields
