@@ -138,7 +138,10 @@ export class StoreProductService {
     const currentTime = new Date();
     // const currentTime = new Date(2025, 1, 5, 9, 30, 0);
     const currentHourMinute = this.formatTime(currentTime);
-    const oneHourLater = this.formatTime(new Date(currentTime.getTime() + 60 * 60 * 1000));
+    let oneHourLater = this.formatTime(new Date(currentTime.getTime() + 60 * 60 * 1000));
+    if (oneHourLater >= '24:00:00') {
+      oneHourLater = '00:00:00';
+    }
 
     let queryBuilder = this.baseQuery();
     this.applyFavouriteFilter(queryBuilder, user_id);
