@@ -139,11 +139,7 @@ export class StoreProductService {
     // const currentTime = new Date(2025, 1, 5, 9, 30, 0);
     const currentHourMinute = this.formatTime(currentTime);
     let oneHourLater = this.formatTime(new Date(currentTime.getTime() + 60 * 60 * 1000));
-    if (oneHourLater >= '24:00:00') {
-      oneHourLater = '00:00:00';
-    }
-
-    let queryBuilder = this.baseQuery();
+     let queryBuilder = this.baseQuery();
     this.applyFavouriteFilter(queryBuilder, user_id);
     this.applyLocationFilter(queryBuilder, userLat, userLng, radius);
 
@@ -322,13 +318,10 @@ export class StoreProductService {
 
   // Formats date to HH:MM:SS
   private formatTime(date: Date): string {
-    return date.toLocaleTimeString('en-US', {
-      timeZone: 'Asia/Kolkata',
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   }
 
   //  Maps raw results to include extra fields
