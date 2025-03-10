@@ -16,7 +16,7 @@ export class HomeService {
   async getHomePageData(dto: TimeSensitiveProductsDto): Promise<any> {
     const selectedProductIds: number[] = []; // Track selected product IDs
 
-    const sections = ['just_for_you', 'last_chance_deals', 'dinnertime_deals','available_now'];
+    const sections = ['just_for_you', 'last_chance_deals', 'available_now','dinnertime_deals'];
 
     const results = await Promise.all(
       sections.map(
