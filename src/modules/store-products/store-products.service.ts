@@ -240,14 +240,12 @@ export class StoreProductService {
             .orderBy('storeProduct.pickup_end_time', 'ASC')
             .addOrderBy('storeProduct.quantity', 'ASC');
           break;
-
         case 'available_now':
           queryBuilder
             .andWhere(
-              'storeProduct.pickup_start_time <= :oneHourLater AND storeProduct.pickup_end_time >= :currentHourMinute',
+              'storeProduct.pickup_start_time <= :currentHourMinute AND storeProduct.pickup_end_time >= :currentHourMinute',
               {
                 currentHourMinute,
-                oneHourLater,
               },
             )
             .addOrderBy('distance', 'ASC');
