@@ -6,6 +6,7 @@ import { Store } from '../store/entities/store.entity';
 import { StoreProduct } from './entities/store-product.entity';
 import { TimeSensitiveProductsDto, TimeSensitiveProductsDtoExplore } from './dto/utility.dto';
 import User from '../users/entities/user.entity';
+import { Favourite } from '../favourite/entities/favourite.entity';
 
 @Injectable()
 export class StoreProductService {
@@ -139,7 +140,7 @@ export class StoreProductService {
     // const currentTime = new Date(2025, 1, 5, 9, 30, 0);
     const currentHourMinute = this.formatTime(currentTime);
     let oneHourLater = this.formatTime(new Date(currentTime.getTime() + 60 * 60 * 1000));
-     let queryBuilder = this.baseQuery();
+    let queryBuilder = this.baseQuery();
     this.applyFavouriteFilter(queryBuilder, user_id);
     this.applyLocationFilter(queryBuilder, userLat, userLng, radius);
 
@@ -179,8 +180,9 @@ export class StoreProductService {
   private applyFavouriteFilter(queryBuilder: SelectQueryBuilder<StoreProduct>, user_id: number) {
     if (user_id) {
       return queryBuilder
-        .leftJoinAndSelect(
+        .leftJoinAndMapOne(
           'storeProduct.favourites',
+          Favourite,
           'favourite',
           'favourite.store_product = storeProduct.id AND favourite.user_id = :user_id',
           { user_id },
