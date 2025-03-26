@@ -238,10 +238,10 @@ export class StoreProductService {
           queryBuilder
             .andWhere('storeProduct.quantity < 15') // Low-stock items
             .andWhere('storeProduct.pickup_end_time >= :currentHourMinute', { currentHourMinute }) // Avoid past-time items
-            // .orWhere('storeProduct.clearance_sale = TRUE') // Clearance sale item
             .orderBy('storeProduct.pickup_end_time', 'ASC')
             .addOrderBy('storeProduct.quantity', 'ASC');
           break;
+
         case 'available_now':
           queryBuilder
             .andWhere(
@@ -258,6 +258,18 @@ export class StoreProductService {
             .andWhere('EXTRACT(HOUR FROM storeProduct.pickup_start_time) >= 17')
             .addOrderBy('distance', 'DESC')
             .addOrderBy('storeProduct.quantity', 'ASC');
+          break;
+
+        case 'sold_out':
+          queryBuilder
+            .andWhere(
+              'storeProduct.pickup_end_time BETWEEN :oneHourAgo AND :currentHourMinute',
+              {
+                oneHourAgo: this.formatTime(new Date(new Date().getTime() - 240 * 60 * 1000)),
+                currentHourMinute,
+              },
+            )
+            .orderBy('storeProduct.pickup_end_time', 'DESC');
           break;
 
         default:
