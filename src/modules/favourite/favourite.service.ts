@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateFavouriteDto } from './dto/create-favourite.dto';
 import { UpdateFavouriteDto } from './dto/update-favourite.dto';
 import { Favourite } from './entities/favourite.entity';
@@ -39,13 +39,39 @@ export class FavouriteService {
     return await this.favouriteRepository.save(favourite);
   }
 
-  async findAll(user_id?: number) {
-    return await this.favouriteRepository.find({
-      where: user_id ? { user_id: user_id } : {},
-      relations: ['store_product'],
-    });
-  }
+  async findAll(user_id?: number, userLat?: number, userLng?: number) {
+    const queryBuilder = this.favouriteRepository
+      .createQueryBuilder('favourite')
+      .innerJoinAndSelect('favourite.store_product', 'storeProduct')
+      .innerJoinAndSelect('storeProduct.product', 'product')
+      .innerJoinAndSelect('storeProduct.store', 'store')
+      .addSelect(
+      userLat && userLng
+        ? `ROUND(
+          CAST(
+            ST_DistanceSphere(
+              ST_MakePoint(store.longitude, store.latitude),
+              ST_MakePoint(:userLng, :userLat)
+            ) / 1000 AS numeric
+          ), 2)`
+        : 'NULL',
+      'distance',
+      )
+      .addSelect('ROUND(4.5, 2)', 'ratings') // Placeholder for ratings
+      .where(user_id ? { user_id: user_id } : {});
 
+    if (userLat && userLng) {
+      queryBuilder.setParameters({ userLng, userLat });
+    }
+
+    return await queryBuilder.getRawAndEntities().then(({ entities, raw }) =>
+      entities.map((favourite, index) => ({
+        ...favourite,
+        distance: parseFloat(raw[index].distance) || null,
+        ratings: parseFloat(raw[index].ratings),
+      })),
+    );
+  }
   async findOne(id: number) {
     const favourite = await this.favouriteRepository.findOne({ where: { id }, relations: ['store_product'] });
     if (!favourite) {

@@ -18,8 +18,8 @@ export class FavouriteController {
   }
 
   @Get()
-  async findAll(@Query("user_id") user_id?:number) {
-    let data = await this.favouriteService.findAll(user_id);
+  async findAll(@Query("user_id") user_id?:number, @Query("userLat") userLat?:number, @Query("userLng") userLng?:number) {
+    let data = await this.favouriteService.findAll(user_id,userLat,userLng);
     return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', data);
 
   }
