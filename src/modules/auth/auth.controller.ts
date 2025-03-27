@@ -1,26 +1,17 @@
-import { Controller, Body, Post, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Body, Post, Param, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { EC200, EC204, EC500, EM100, EM106, EM127, EM141, EM149 } from 'src/core/constants';
 import HandleResponse from 'src/core/utils/handle_response';
 import { DeleteDto, LoginDto, ResendEmailDto, SignupDto, userlogoutDto, VerifyEmailDto } from './dto/login-dto';
-import { ms } from 'date-fns/locale';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // @Post('login')
-  // async login(@Body() req: LoginDto) {
-  //   try {
-  //     let data = await this.authService.login(req);
-  //     return HandleResponse.buildSuccessObj(EC200, EM106, data);
-  //   } catch (error) {
-  //     return HandleResponse.buildErrObj(error.status, EM100, error);
-  //   }
-  // }
   @Post('login')
   async login(@Body() req: LoginDto) {
     try {
@@ -51,6 +42,7 @@ export class AuthController {
     }
   }
   @Post('verify-email')
+  @UseGuards(AuthGuard('local'))
   async verifyOtp(@Body() body: VerifyOtpDto) {
     try {
       let { code, msg, data } = await this.authService.verifyOtp(body);

@@ -7,4 +7,5 @@ export enum Errors {
   MOBILE_NO_ALREADY_EXISTS = 'Mobile no already exists ',
   NO_RECORD_FOUND = `No record found `,
   USER_NOT_EXISTS = 'User not exists', 
+  INVALID_TOKEN = 'Provided token is invalid', 
 }

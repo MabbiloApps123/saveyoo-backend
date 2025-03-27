@@ -1,7 +1,10 @@
 import moment, { Duration } from 'moment';
 import { logger } from './logger';
+import { DateTime } from 'luxon';
 
 export class DateUtils {
+  static userTimeZone: string = 'Asia/Kolkata'; // Default, can be set dynamically
+
   static formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
@@ -72,21 +75,29 @@ export class DateUtils {
     return givenDate < currentDate;
   }
 
-   static convertToGMT(inputDateString: string): string {
+  static convertToGMT(inputDateString: string): string {
     // Convert input date string to Date object
     const inputDate = new Date(inputDateString);
-  
+
     // Get individual components of the date
     const year = inputDate.getUTCFullYear();
-    const month = (`0${inputDate.getUTCMonth() + 1}`).slice(-2);
-    const day = (`0${inputDate.getUTCDate()}`).slice(-2);
-    const hours = (`0${inputDate.getUTCHours()}`).slice(-2);
-    const minutes = (`0${inputDate.getUTCMinutes()}`).slice(-2);
-    const seconds = (`0${inputDate.getUTCSeconds()}`).slice(-2);
-  
+    const month = `0${inputDate.getUTCMonth() + 1}`.slice(-2);
+    const day = `0${inputDate.getUTCDate()}`.slice(-2);
+    const hours = `0${inputDate.getUTCHours()}`.slice(-2);
+    const minutes = `0${inputDate.getUTCMinutes()}`.slice(-2);
+    const seconds = `0${inputDate.getUTCSeconds()}`.slice(-2);
+
     // Create GMT date string
     const gmtDateString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
-  
+
     return gmtDateString;
-  }  
+  }
+
+  static convertToUTC(timeString: string) {
+    return DateTime.fromFormat(timeString, 'HH:mm', { zone: this.userTimeZone }).setZone('UTC').toFormat('HH:mm');
+  }
+
+  static convertFromUTC(timeString: string) {
+    return DateTime.fromFormat(timeString, 'HH:mm:ss', { zone: 'UTC' }).setZone(this.userTimeZone).toFormat('HH:mm:ss');
+  }
 }

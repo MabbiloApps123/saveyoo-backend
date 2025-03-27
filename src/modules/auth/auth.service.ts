@@ -61,8 +61,9 @@ export class AuthService {
     // if (!Encryption.comparePassword(userData.password, user.password))
     // throw new UnauthorizedException(Errors.INVALID_USER_DETAILS);
     const token = await this.generateToken(user);
+    const refreshToken = await this.generateToken(user);
     // const updatedUser = await this.userService.update(user.id, { device_token: userData?.device_token });
-    return { ...user, access_token: token };
+    return { ...user, access_token: token,refreshToken:refreshToken };
   }
 
   async signup({ email, password }: { email: string; password: string }) {
@@ -115,12 +116,26 @@ export class AuthService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  private async generateToken(user: any) {
+  private async generateToken(user: any, isRefreshToken = false) {
     const token = await this.jwtService.signAsync(user, {
       secret: process.env.JWTKEY,
-      expiresIn: '1h',
+      expiresIn: isRefreshToken ? '2h' : '1h',
     });
     return token;
+  }
+
+  async refreshToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token, { secret: process.env.JWTKEY });
+      const user = await this.userService.findOneById(decoded.user_id);
+      if (!user) throw new NotFoundException(Errors.USER_NOT_EXISTS);
+
+      const newToken = await this.generateToken({ user_id: user.id }, false);
+      const refreshToken = await this.generateToken({ user_id: user.id }, true); // Generate refresh token
+      return { access_token: newToken, refresh_token: refreshToken }; // Include refresh token in response
+    } catch (error) {
+      throw new NotFoundException(Errors.INVALID_TOKEN);
+    }
   }
   async forgotPassword(email_id: string) {
     let user: User = await this.userService.findOneByEmail(email_id);
