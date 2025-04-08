@@ -73,10 +73,10 @@ export class Store extends BaseModel {
   // @Column('geometry', { nullable:true,spatialFeatureType: 'Point', srid: 4326 })
   // location: object;
 
-  @Column({ type: 'decimal',default:13.0843, precision: 10, scale: 6 })
+  @Column({ type: 'decimal', default: 13.08, precision: 10, scale: 2, select: true })
   latitude: number;
 
-  @Column({ type: 'decimal',default:80.2705, precision: 10, scale: 6 })
+  @Column({ type: 'decimal', default: 80.27, precision: 10, scale: 2, select: true })
   longitude: number;
 
   @Column({default:"452345ASDFA"})

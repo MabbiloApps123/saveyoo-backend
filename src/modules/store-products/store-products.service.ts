@@ -135,6 +135,7 @@ export class StoreProductService {
       search,
       page,
       limit,
+      sort
     } = dto;
     const currentTime = new Date();
     // const currentTime = new Date(2025, 1, 5, 9, 30, 0);
@@ -147,6 +148,7 @@ export class StoreProductService {
     if (selectedProductIds && selectedProductIds.length > 0) {
       queryBuilder.andWhere('storeProduct.id NOT IN (:...selectedProductIds)', { selectedProductIds });
     }
+    this.applySorting(queryBuilder, sort);
 
     // Apply optional filters
     this.applySectionFilters(queryBuilder, sectionType, currentHourMinute, oneHourLater, dietPreference);
@@ -156,7 +158,6 @@ export class StoreProductService {
 
     // Apply pagination
     this.applyPagination(queryBuilder, page, limit);
-
     // Execute query and process results
     const { entities, raw } = await queryBuilder.getRawAndEntities();
     const results = this.mapResults(entities, raw);
@@ -166,6 +167,28 @@ export class StoreProductService {
     return this.filterAndMap(results);
   }
 
+  private applySorting(queryBuilder: SelectQueryBuilder<StoreProduct>, sort?: string) {
+    switch (sort) {
+      case 'popular':
+        queryBuilder.orderBy('storeProduct.popularity', 'DESC');
+        break;
+      case 'newest':
+        queryBuilder.orderBy('storeProduct.created_at', 'DESC');
+        break;
+      case 'review':
+        queryBuilder.orderBy('storeProduct.customer_review', 'DESC');
+        break;
+      case 'low-to-high':
+        queryBuilder.orderBy('storeProduct.discounted_price', 'ASC');
+        break;
+      case 'high-to-low':
+        queryBuilder.orderBy('storeProduct.discounted_price', 'DESC');
+        break;
+      default:
+        // queryBuilder.orderBy('storeProduct.created_at', 'DESC'); // Default sorting
+        break;
+    }
+  }
   private baseQuery() {
     let queryBuilder = this.storeProductRepository
       .createQueryBuilder('storeProduct')
@@ -368,6 +391,8 @@ export class StoreProductService {
         category: storeProduct.store.category,
         open_time: storeProduct.store.open_time,
         close_time: storeProduct.store.close_time,
+        latitude: storeProduct.store.latitude,
+        longitude: storeProduct.store.longitude,
       },
     }));
   }

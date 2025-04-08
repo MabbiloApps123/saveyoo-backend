@@ -87,5 +87,16 @@ export class TimeSensitiveProductsDtoExplore extends TimeSensitiveProductsDto {
     @Type(() => Number)
     @IsOptional()
     limit?: number = 10;
+
+    @IsString()
+    @ApiProperty({
+      example: 'Popular',
+      description: 'Sort option for the results',
+      required: false,
+      enum: ['popular', 'newest', 'review', 'lowest-to-high', 'highest-to-low'],
+    })
+    @Type(() => String)
+    @IsOptional()
+    sort?: 'popular'| 'newest'| 'review'| 'low-to-high'| 'hig-to-low';
   }
   
