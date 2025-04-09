@@ -93,7 +93,7 @@ export class TimeSensitiveProductsDtoExplore extends TimeSensitiveProductsDto {
       example: 'Popular',
       description: 'Sort option for the results',
       required: false,
-      enum: ['popular', 'newest', 'review', 'lowest-to-high', 'highest-to-low'],
+      enum: ['popular', 'newest', 'review', 'low-to-high', 'high-to-low'],
     })
     @Type(() => String)
     @IsOptional()

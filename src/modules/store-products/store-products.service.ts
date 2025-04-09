@@ -169,15 +169,15 @@ export class StoreProductService {
 
   private applySorting(queryBuilder: SelectQueryBuilder<StoreProduct>, sort?: string) {
     switch (sort) {
-      case 'popular':
-        queryBuilder.orderBy('storeProduct.popularity', 'DESC');
-        break;
+      // case 'popular':
+      //   queryBuilder.orderBy('storeProduct.popularity', 'DESC');
+      //   break;
       case 'newest':
         queryBuilder.orderBy('storeProduct.created_at', 'DESC');
         break;
-      case 'review':
-        queryBuilder.orderBy('storeProduct.customer_review', 'DESC');
-        break;
+      // case 'review':
+      //   queryBuilder.orderBy('storeProduct.review', 'DESC');
+      //   break;
       case 'low-to-high':
         queryBuilder.orderBy('storeProduct.discounted_price', 'ASC');
         break;
