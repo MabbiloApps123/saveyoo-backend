@@ -72,7 +72,6 @@
 import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import Encryption from 'src/core/utils/encryption'; // Replace with your actual encryption utility.
 import { BaseModel } from 'src/core/database/BaseModel';
-import { Reservation } from 'src/modules/reservation/entities/reservation.entity';
 
 @Entity({ name: 'users' })
 export default class User extends BaseModel {
@@ -122,6 +121,6 @@ export default class User extends BaseModel {
   @Column({ type: 'text', array: true, default: () => 'ARRAY[]::text[]' })
   preferences: string[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.user)
-  reservations: Reservation[];
+  // @OneToMany(() => Reservation, (reservation) => reservation.user)
+  // reservations: Reservation[];
 }

@@ -54,6 +54,7 @@ export class AuthService {
   }
 
   public async login(userData: LoginDto): Promise<any> {
+    logger.info(`Login_Entry: ` + JSON.stringify(userData));
     const user: User = await this.userService.findOneByEmail(userData.email_id);
     if (!user) throw new NotFoundException(Errors.USER_NOT_EXISTS);
     // if (!user.password) throw new UnauthorizedException(Errors.INCORRECT_USER_PASSWORD);

@@ -21,21 +21,12 @@ export class ProductsController {
     const data = await this.productsService.findOne(+id);
     return HandleResponse.buildSuccessObj(200, 'Product retrieved successfully!', data);
   }
-  // @Get('/products/by-deal') async getProducstByDeal(
-  //   @Query('latitude') latitude: number,
-  //   @Query('longitude') longitude: number,
-  //   @Query('radius') radius: number,
-  //   @Query('category') category: string,
-  // ) {
-  //   const stores = await this.productsService.getProductsByDeal(category);
-  //   return HandleResponse.buildSuccessObj(200, 'Data retrieved successfully!', stores);
-  // }
   @Patch(':id') async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     const data = await this.productsService.update(+id, updateProductDto);
     return HandleResponse.buildSuccessObj(200, 'Product updated successfully!', data);
   }
   @Delete(':id') async remove(@Param('id') id: string) {
     const data = await this.productsService.remove(+id);
-    return HandleResponse.buildSuccessObj(200, 'Product removed successfully!', data); 
+    return HandleResponse.buildSuccessObj(200, 'Product removed successfully!', data);
   }
 }

@@ -42,7 +42,6 @@ export class AuthController {
     }
   }
   @Post('verify-email')
-  @UseGuards(AuthGuard('local'))
   async verifyOtp(@Body() body: VerifyOtpDto) {
     try {
       let { code, msg, data } = await this.authService.verifyOtp(body);

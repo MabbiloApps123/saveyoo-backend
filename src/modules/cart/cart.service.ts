@@ -64,8 +64,8 @@ export class CartService {
   }
 
   async update(id: number, updateCartDto: UpdateCartDto) {
-    await this.cartRepository.update(id, updateCartDto);
-    return this.findOne(id);
+    await this.cartRepository.update(id, updateCartDto); 
+    return await this.findOne(id);
   }
 
   async remove(id: number) {

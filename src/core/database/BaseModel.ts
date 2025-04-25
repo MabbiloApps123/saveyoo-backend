@@ -38,7 +38,7 @@ export abstract class BaseModel extends BaseEntity {
   @Column({ type: 'boolean', default: false, select: false })
   is_deleted!: boolean;
 
-  @CreateDateColumn({ type: 'timestamp', select: false })
+  @CreateDateColumn({ type: 'timestamp', select: true })
   created_at!: Date;
 
   @UpdateDateColumn({ type: 'timestamp', select: false })

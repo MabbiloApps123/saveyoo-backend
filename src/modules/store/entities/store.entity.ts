@@ -1,6 +1,6 @@
 import { BaseModel } from 'src/core/database/BaseModel';
 import { StoreProduct } from 'src/modules/store-products/entities/store-product.entity';
-import { Column, Entity, Geometry, OneToMany } from 'typeorm';
+import {  Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('stores')
 export class Store extends BaseModel {
@@ -27,6 +27,9 @@ export class Store extends BaseModel {
 
   @Column()
   email: string;
+
+  @Column({ default: false })
+  email_verified: boolean;
 
   @Column()
   street: string;

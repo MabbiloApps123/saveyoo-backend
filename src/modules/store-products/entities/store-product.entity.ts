@@ -3,7 +3,6 @@ import { Product } from '../../products/entities/product.entity';
 import { BaseModel } from 'src/core/database/BaseModel';
 import { Store } from 'src/modules/store/entities/store.entity';
 import { Favourite } from 'src/modules/favourite/entities/favourite.entity';
-import { Reservation } from 'src/modules/reservation/entities/reservation.entity';
 import { Cart } from 'src/modules/cart/entities/cart.entity';
 
 @Entity({ name: 'store_product' })
@@ -43,11 +42,9 @@ export class StoreProduct extends BaseModel {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Favourite, (favourite) => favourite.store_product)
+  @ManyToOne(() => Favourite)
   favourites: Favourite[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.storeProduct)
-  reservations: Reservation[];
 
   @OneToMany(() => Cart, (cart) => cart.storeProduct)
   carts: Cart[];

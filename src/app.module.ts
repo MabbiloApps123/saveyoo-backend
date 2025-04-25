@@ -13,7 +13,10 @@ import { DBconfig } from './config';
 import { StoreProductsModule } from './modules/store-products/store-products.module';
 import { FavouriteModule } from './modules/favourite/favourite.module';
 import { UserAddressesModule } from './modules/user-addresses/user-addresses.module';
+import { DatabaseSeeder } from './seeds/database.seeder';
+import { JwtMiddleware } from './middleware/jwt.middleware'; // Import JwtMiddleware
 import { CartModule } from './modules/cart/cart.module'; // Import CartModule
+import { ShopAuthModule } from './modules/shop-auth/shop-auth.module';
 
 console.log('env--->',DBconfig)
 @Module({
@@ -46,14 +49,17 @@ console.log('env--->',DBconfig)
     StoreProductsModule,
     FavouriteModule,
     UserAddressesModule,
-    // ReservationModule,
-    CartModule, // Add CartModule
+    CartModule, // Add CartModule,
+    ShopAuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,DatabaseSeeder],
 
 })
 export class AppModule implements NestModule {
-  constructor() {}
-  configure(consumer: MiddlewareConsumer) {}
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .forRoutes('*'); // Apply JwtMiddleware to all routes
+  }
 }
